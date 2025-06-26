@@ -7,11 +7,14 @@ __pycache__/
 node_modules/
 dist/
 build/
-.env.local
+.local
 
 # Logs
 *.log
 
-# OS
+# OS-specific files
 .DS_Store
 Thumbs.db
+
+# GeoIP database
+*.mmdb
