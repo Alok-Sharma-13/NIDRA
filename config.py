@@ -1,5 +1,9 @@
 """
 Project configuration loader using .env file (dotenv).
+
+Author: Alok & Aditya
+Date: June 2025
+
 """
 
 from dotenv import load_dotenv
@@ -9,7 +13,7 @@ import os
 load_dotenv()
 
 # ==== Database Config ====
-DB_TYPE = os.getenv("DB_TYPE", "mongodb")
+DB_TYPE = os.getenv("DB_TYPE", "postgresql")
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 POSTGRES_URI = os.getenv("POSTGRES_URI", "postgresql://user:password@localhost:5432/nidra")
 
