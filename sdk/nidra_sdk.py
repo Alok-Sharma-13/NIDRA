@@ -11,6 +11,9 @@ Date: June 2025
 
 from core.traffic_sniffer import sniff_request
 from backend import database_config
+from functools import wraps
+from flask import request 
+import json
 
 class NidraSDK:
     def __init__(self):
@@ -48,4 +51,34 @@ class NidraSDK:
         except Exception as e:
             print(f"[NIDRA SDK] Error storing log: {e}")
 
-        return log_data
+        return log_data 
+
+def sniff_request_decorator(sdk_instance):
+    """
+    A decorator to log request data using the given NidraSDK instance.
+
+    Use this on route handlers to automatically capture and log incoming requests.
+
+    Example:
+        sdk = NidraSDK()
+        sniff = sniff_request_decorator(sdk)  ---- This is where the decorater is assined to a variable 
+
+        @app.route("/home")
+        @sniff   ----- This is where the decorater is used 
+        def home():
+            return "Welcome"
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            sdk_instance.capture_request(request)
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+# === REMOVE THIS BELOW CODE FROM THIS ABOVE MAIN CODE ===
+# print("[NIDRA SDK] Failed to log request")
+# print("[NIDRA SDK] Log stored in MongoDB")
+# print("[NIDRA SDK] PostgreSQL logging not yet implemented")
+# print(f"[NIDRA SDK] Error storing log: {e}")
