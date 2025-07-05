@@ -9,6 +9,9 @@ Date: June 2025
 from datetime import datetime
 from core.geoip_lookup import GeoIPService
 
+
+geoIP = GeoIPService()
+
 def sniff_request(request):
     """
     Extracts key metadata from the incoming HTTP request.
@@ -27,9 +30,7 @@ def sniff_request(request):
             or request.client.host  # For FastAPI
         )
         
-        geoip = GeoIPService()
-        country = geoip.lookup_country(ip_address)
-        geoip.close()
+        country = geoIP.lookup_country(ip_address)
 
         log_data = {
             "timestamp": datetime.utcnow().isoformat(),
