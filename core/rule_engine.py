@@ -6,9 +6,9 @@ Author: Alok & Aditya
 Date: July 2025
 """
 
-from datetime import datetime
-from typing import Optional, Dict, List, Any
+from datetime import datetime, timedelta
 import re
+from typing import Optional, Dict, List, Any
 
 # === Base Rule Classes ===
 
@@ -27,7 +27,7 @@ class Rule:
 
 
 class SignatureRule(Rule):
-    """raise
+    """
     Rule that matches request path or headers against known malicious patterns.
     """
     def __init__(self, name: str, pattern: str, target: str = "path", severity: str = "medium"):
@@ -52,25 +52,29 @@ class SignatureRule(Rule):
 class ThresholdRule(Rule):
     """
     Rule that detects repeated events from the same key (e.g., IP flooding).
-    This version is stateless and depends on external counters.
     """
-    def __init__(self, name: str, threshold: int, key: str = "ip_address", severity: str = "high"):
-        super().__init__(name, f"Threshold exceeded: {threshold} for {key}", severity)
+    def __init__(self, name: str, threshold: int, window_seconds: int = 60, key: str = "ip_address", severity: str = "high"):
+        super().__init__(name, f"Threshold exceeded: {threshold} in {window_seconds}s for {key}", severity)
         self.threshold = threshold
+        self.window_seconds = window_seconds
         self.key = key
 
-    def evaluate(self, log: Dict[str, Any], state: Dict[str, int]) -> Optional[Dict[str, Any]]:
+    def evaluate(self, log: Dict[str, Any], state: Dict[str, List[datetime]]) -> Optional[Dict[str, Any]]:
         value = log.get(self.key)
         if not value:
             return None
 
-        state[value] = state.get(value, 0) + 1
-        if state[value] > self.threshold:
+        now = datetime.utcnow()
+        state.setdefault(value, []).append(now)
+
+        state[value] = [ts for ts in state[value] if now - ts <= timedelta(seconds=self.window_seconds)]
+
+        if len(state[value]) > self.threshold:
             return {
                 "rule": self.name,
                 "description": self.description,
                 "severity": self.severity,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": now.isoformat(),
             }
         return None
 
@@ -95,10 +99,10 @@ class RuleEngine:
         ])
 
         self.threshold_rules.append(
-            ThresholdRule("IP Flood", threshold=20, key="ip_address", severity="critical")
+            ThresholdRule("IP Flood", threshold=20, window_seconds=60, key="ip_address", severity="critical")
         )
 
-    def analyze(self, log: Dict[str, Any], state: Optional[Dict[str, int]] = None) -> List[Dict[str, Any]]:
+    def analyze(self, log: Dict[str, Any], state: Optional[Dict[str, List[datetime]]] = None) -> List[Dict[str, Any]]:
         """
         Analyze a log entry using all rules.
 
