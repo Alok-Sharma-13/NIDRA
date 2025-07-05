@@ -3,6 +3,10 @@ __pycache__/
 *.pyc
 .env
 
+# Python and Json files
+client.py
+test.json 
+
 # Node/React
 node_modules/
 dist/

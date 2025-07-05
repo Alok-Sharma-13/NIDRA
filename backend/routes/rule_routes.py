@@ -17,7 +17,7 @@ engine = RuleEngine()
 # Shared state for threshold-based rules (like IP flood detection)
 rule_state: Dict[str, int] = {}
 
-@rules_bp.route("api/rules/analyze", methods=["POST"])
+@rules_bp.route("/api/rules/analyze", methods=["POST"])
 def analyze_log():
     """
     Accepts a traffic log and applies detection rules.
@@ -29,7 +29,7 @@ def analyze_log():
         JSON object with alerts triggered (if any).
     """
     try:
-        log = request.get_json()
+        log = request.get_json(force=True)
 
         if not log:
             return jsonify({"success":False, "error":"Invalid or empty log data"}), 400
