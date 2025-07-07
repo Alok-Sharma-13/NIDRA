@@ -2,7 +2,7 @@
 Database connector for NIDRA.
 Supports MongoDB and PostgreSQL based on configuration.
 
-Author: Alok & Aditya
+Author: Alok 
 Date: June 2025
 
 """

@@ -5,7 +5,7 @@ This SDK provides methods to capture and process incoming HTTP request metadata
 for intrusion detection and logging. It acts as the main interface for integrating
 NIDRA with any Python-based backend (Flask, FastAPI, etc).
 
-Author: Alok & Aditya
+Author: Alok
 Date: June 2025
 """
 

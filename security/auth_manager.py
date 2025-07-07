@@ -2,7 +2,7 @@
 Auth Manager for NIDRA
 Provides basic admin login functionality using credentials from .env file.
 
-Author: Alok & Aditya
+Author: Alok 
 Date: July 2025
 """
 import os

@@ -2,7 +2,7 @@
 Rules API Route for NIDRA
 Applies rule engine on incoming traffic logs and returns alerts.
 
-Author: Alok & Aditya
+Author: Alok 
 Date: July 2025
 """
 

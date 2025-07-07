@@ -1,7 +1,7 @@
 """
 Project configuration loader using .env file (dotenv).
 
-Author: Alok & Aditya
+Author: Alok 
 Date: June 2025
 
 """

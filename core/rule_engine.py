@@ -2,12 +2,14 @@
 Rule Engine for NIDRA
 Analyzes incoming traffic logs and applies detection rules to identify suspicious activity.
 
-Author: Alok & Aditya
+Author: Alok
 Date: July 2025
 """
 
 from datetime import datetime, timedelta
 import re
+import json
+import os 
 from typing import Optional, Dict, List, Any
 
 # === Base Rule Classes ===
@@ -91,16 +93,46 @@ class RuleEngine:
         self._load_default_rules()
 
     def _load_default_rules(self):
-        """Registers a collection of core rules."""
-        self.signature_rules.extend([
-            SignatureRule("SQL Injection", r"(union select|drop table|--)", target="path", severity="high"),
-            SignatureRule("XSS Attempt", r"<script.*?>", target="path", severity="high"),
-            SignatureRule("Suspicious User-Agent", r"sqlmap|nmap|curl", target="headers", severity="medium"),
-        ])
+        """Registers a collection of core rules based on rules.json."""
+        rules_path = os.path.join("data", "rules.json")
+        enabled_rules = {}
 
-        self.threshold_rules.append(
-            ThresholdRule("IP Flood", threshold=20, window_seconds=60, key="ip_address", severity="critical")
-        )
+        try:
+            with open(rules_path, "r") as f:
+                config = json.load(f)
+                enabled_rules = config.get("enabled_rules", {})
+        except Exception as e:
+            print(f"[RuleEngine] Failed to load rules.json: {e}")
+            # Fallback: enable all by default
+            enabled_rules = {
+                "SQL Injection": True,
+                "XSS Attempt": True,
+                "Suspicious User-Agent": True,
+                "IP Flood": True
+            }
+
+        # Signature Rules
+        if enabled_rules.get("SQL Injection", False):
+            self.signature_rules.append(
+                SignatureRule("SQL Injection", r"(union select|drop table|--)", target="path", severity="high")
+            )
+
+        if enabled_rules.get("XSS Attempt", False):
+            self.signature_rules.append(
+                SignatureRule("XSS Attempt", r"<script.*?>", target="path", severity="high")
+            )
+
+        if enabled_rules.get("Suspicious User-Agent", False):
+            self.signature_rules.append(
+                SignatureRule("Suspicious User-Agent", r"sqlmap|nmap|curl", target="headers", severity="medium")
+            )
+
+        # Threshold Rule
+        if enabled_rules.get("IP Flood", False):
+            self.threshold_rules.append(
+                ThresholdRule("IP Flood", threshold=20, window_seconds=60, key="ip_address", severity="critical")
+            )
+
 
     def analyze(self, log: Dict[str, Any], state: Optional[Dict[str, List[datetime]]] = None) -> List[Dict[str, Any]]:
         """

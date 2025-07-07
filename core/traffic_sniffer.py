@@ -2,7 +2,7 @@
 Traffic Sniffer for NIDRA
 Captures incoming request metadata for logging and threat analysis.
 
-Author: Alok & Aditya
+Author: Alok 
 Date: June 2025
 """
 

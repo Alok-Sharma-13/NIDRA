@@ -2,7 +2,7 @@
 GeoIP Lookup Module for NIDRA SDK
 Provides functions to lookup the country for a given IP address using MaxMind GeoLite2 database.
 
-Author: Alok & Aditya
+Author: Alok 
 Date: June 2025
 """
 
