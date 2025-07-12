@@ -5,8 +5,8 @@ __pycache__/
 
 # Python and Json files
 client.py
+config.py
 test.json 
-
 # Node/React
 node_modules/
 dist/
