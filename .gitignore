@@ -7,6 +7,7 @@ __pycache__/
 client.py
 config.py
 test.json 
+honeypots.json
 # Node/React
 node_modules/
 dist/
