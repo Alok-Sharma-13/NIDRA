@@ -10,8 +10,8 @@ import os
 import json
 from datetime import datetime
 from flask import request, make_response
-
-from core.alert_dispatcher import log_to_gile, send_dashboard
+# from core.utils import append_json_log
+from core.alert_dispatcher import log_to_file, send_dashboard
 from core.severity_classifier import SeverityClassifier
 
 HONEYPOT_FILE = "data/honeypots.json"
@@ -58,7 +58,7 @@ class HoneypotManager:
         alert_data["severity"] = self.classifier.classify(alert_data)
 
         # Log & Dispatch
-        log_to_gile(alert_data)
+        log_to_file(alert_data)
         send_dashboard(alert_data)
 
 

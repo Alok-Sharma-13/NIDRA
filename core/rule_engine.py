@@ -11,6 +11,7 @@ import re
 import json
 import os 
 from typing import Optional, Dict, List, Any
+# from core.alert_dispatcher import log_to_file, send_dashboard
 
 # === Base Rule Classes ===
 
@@ -124,7 +125,7 @@ class RuleEngine:
 
         if enabled_rules.get("Suspicious User-Agent", False):
             self.signature_rules.append(
-                SignatureRule("Suspicious User-Agent", r"sqlmap|nmap|curl", target="headers", severity="medium")
+                SignatureRule("Suspicious User-Agent", r"sqlmap|nmap|curl", target="user_agent", severity="medium")
             )
 
         # Threshold Rule
@@ -150,13 +151,15 @@ class RuleEngine:
         for rule in self.signature_rules:
             result = rule.evaluate(log)
             if result:
-                alerts.append(result)
+                full_alert = {**result, **log}
+                alerts.append(full_alert)
 
         for rule in self.threshold_rules:
             if state is None:
                 continue  # ThresholdRule requires state
             result = rule.evaluate(log, state)
             if result:
-                alerts.append(result)
+                full_alert = {**result, **log}
+                alerts.append(full_alert)
 
         return alerts

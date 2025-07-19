@@ -1,2 +1,0 @@
-{"source": "honeypot", "ip": "127.0.0.1", "path": "/api/log/admin", "method": "POST", "timestamp": "2025-07-17 17:40:31", "rule": "Honeypot Path Accessed: /api/log/admin", "severity": "High"}
-{"source": "honeypot", "ip": "127.0.0.1", "path": "/users/root/backup", "method": "POST", "timestamp": "2025-07-17 17:40:57", "rule": "Honeypot Path Accessed: /users/root/backup", "severity": "High"}

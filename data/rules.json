@@ -1,7 +1,7 @@
 {
   "enabled_rules": {
     "SQL Injection": true,
-    "XSS Attempt": false,
+    "XSS Attempt": true,
     "IP Flood": true,
     "Suspicious User-Agent": true
   }
