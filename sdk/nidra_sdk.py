@@ -5,7 +5,7 @@ Provides methods to sniff traffic, check honeypots, analyze logs with rule engin
 block malicious IPs, and log events in a structured way.
 
 Author: Alok
-Date: July 2025
+Date: August 2025
 """
 
 import os
@@ -19,6 +19,8 @@ from core.rule_engine import RuleEngine
 from core.honeypot_manager import manager as honeypot_manager
 from core.alert_dispatcher import dispatch_alert
 from backend import database_config
+
+BLOCKED_IPS_FILE = "data/log/blocked_ips.txt"
 
 
 class NidraSDK:
@@ -34,14 +36,16 @@ class NidraSDK:
         if not log:
             return None
 
+        # Check if IP is blocked
+        if self.is_ip_blocked(log["ip_address"]):
+            return "403 Forbidden - IP Blocked", 403
+
         self.log_traffic(log)
 
-        # Check for honeypot path
         honeypot_response = self.check_honeypot(request_obj.path)
         if honeypot_response:
             return honeypot_response
 
-        # Run rule engine
         self.analyze_with_rules(log)
         return log
 
@@ -71,13 +75,42 @@ class NidraSDK:
         except Exception as e:
             print(f"[NIDRA SDK] Failed to log alert: {e}")
 
+    # === IP Blocker Methods ===
+    def block_ip(self, ip):
+        os.makedirs(os.path.dirname(BLOCKED_IPS_FILE), exist_ok=True)
+        if not self.is_ip_blocked(ip):
+            with open(BLOCKED_IPS_FILE, "a") as f:
+                f.write(f"{ip}\n")
+            print(f"[IPBlocker] IP blocked: {ip}")
+        else:
+            print(f"[IPBlocker] IP already blocked: {ip}")
 
+    def unblock_ip(self, ip):
+        if not os.path.exists(BLOCKED_IPS_FILE):
+            return
+        with open(BLOCKED_IPS_FILE, "r") as f:
+            lines = f.readlines()
+        with open(BLOCKED_IPS_FILE, "w") as f:
+            for line in lines:
+                if line.strip() != ip:
+                    f.write(line)
+        print(f"[IPBlocker] IP unblocked: {ip}")
+
+    def is_ip_blocked(self, ip):
+        if not os.path.exists(BLOCKED_IPS_FILE):
+            return False
+        with open(BLOCKED_IPS_FILE, "r") as f:
+            blocked_ips = [line.strip() for line in f.readlines()]
+        return ip in blocked_ips
+
+
+# === Decorator for Clients ===
 def sniff_request_decorator(sdk_instance):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
             result = sdk_instance.capture_request(request)
-            if result and isinstance(result, tuple):  # Honeypot response
+            if result and isinstance(result, tuple):  # Honeypot response or blocked IP
                 return result
             return func(*args, **kwargs)
         return wrapper
