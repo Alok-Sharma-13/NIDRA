@@ -8,7 +8,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 
-import config
+import backend.config as config
 
 def test_config():
     print("DB_TYPE:", config.DB_TYPE)
