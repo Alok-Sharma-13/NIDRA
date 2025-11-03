@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from core.traffic_sniffer import sniff_request
-from config import DB_TYPE
+from backend.config import DB_TYPE
 from backend.database_config import db, SessionLocal
 from datetime import datetime
 
