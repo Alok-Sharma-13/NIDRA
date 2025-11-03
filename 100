@@ -1,0 +1,4 @@
+{
+  "error": "Request body must be a list of logs",
+  "success": false
+}
