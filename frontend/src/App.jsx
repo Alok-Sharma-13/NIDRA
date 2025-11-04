@@ -1,4 +1,4 @@
-import { useState,useContext } from 'react'
+import { useState, useContext } from 'react'
 import Sidebar from './components/Sidebar'
 import HoneyPot from './components/HoneyPot'
 import { sidebarContext } from './context/SidebarContext'
@@ -7,7 +7,9 @@ import IPs from './components/IPs'
 import Roles from './components/Roles'
 
 function App() {
+
  const {sidebarVal, setsidebarVal} = useContext(sidebarContext)
+
   return (
     <>
       <div className="flex h-screen">
@@ -20,6 +22,7 @@ function App() {
             <Sidebar label="Role" />
             <Sidebar label="DB" />
             <Sidebar label="Alerts" />
+            <Sidebar label="blocked IPs" />
           </div>
           <div>
             <Sidebar label="Settings" />
