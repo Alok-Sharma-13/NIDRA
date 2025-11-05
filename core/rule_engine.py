@@ -109,7 +109,13 @@ class RuleEngine:
                 "SQL Injection": True,
                 "XSS Attempt": True,
                 "Suspicious User-Agent": True,
-                "IP Flood": True
+                "IP Flood": True,
+                "Broken Authentication": True,                      #New rule 
+                "Broken Access Control / IDOR": True,               #New rule 
+                "Remote Code Execution / Command Injection": True,  #New rule 
+                "File Upload Abuse": True,                          #New rule 
+                "Insecure Deserialization": True                    #New rule 
+
             }
 
         # Signature Rules
@@ -132,6 +138,31 @@ class RuleEngine:
         if enabled_rules.get("IP Flood", False):
             self.threshold_rules.append(
                 ThresholdRule("IP Flood", threshold=20, window_seconds=60, key="ip_address", severity="critical")
+            )
+
+        if enabled_rules.get("Broken Authentication",False):
+            self.threshold_rules.append(
+                ThresholdRule("Broken Authentication",threshold=5,window_seconds=120,key="username",severity="high")
+            )
+
+        if enabled_rules.get("Broken Access Control / IDOR", False):
+            self.signature_rules.append(
+                SignatureRule("Broken Access Control / IDOR", r"/user/\d+|/profile/\d+|/invoice/\d+",target="path",severity="critical")
+            )    
+        
+        if enabled_rules.get("Remote Code Execution / Command Injection", False):
+            self.signature_rules.append(
+                SignatureRule("Remote Code Execution / Command Injection", r"(\b(cat|ls|whoami|curl|wget|bash|sh)\b|;|&&|\|)", target="body", severity="critical")
+            )
+
+        if enabled_rules.get("File Upload Abuse", False):
+            self.signature_rules.append(
+                SignatureRule("File Upload Abuse", r"(\.php$|\.jsp$|\.asp$|\.exe$|\.sh$|\.js$|\.jpg\.php$|\.png\.php$)", target="filename", severity="high")
+            )
+
+        if enabled_rules.get("Insecure Deserialization", False):
+            self.signature_rules.append(
+                SignatureRule("Insecure Deserialization", r"(pickle|object|javaSerialized|Y29tcGxleA==|__reduce__)", target="body", severity="critical")
             )
 
 
