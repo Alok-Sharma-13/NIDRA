@@ -3,6 +3,11 @@
     "SQL Injection": true,
     "XSS Attempt": true,
     "IP Flood": true,
-    "Suspicious User-Agent": true
+    "Suspicious User-Agent": true,
+    "Broken Authentication": true,
+    "Broken Access Control / IDOR": true,
+    "Remote Code Execution / Command Injection": true,
+    "File Upload Abuse": true,
+    "Insecure Deserialization": true
   }
 }
