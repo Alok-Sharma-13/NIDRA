@@ -8,7 +8,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from backend import database_config
-import config
+import backend.routes.config as config
 
 def test_connection():
     if config.DB_TYPE == "mongodb":

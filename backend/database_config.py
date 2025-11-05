@@ -6,7 +6,7 @@ Author: Alok
 Date: June 2025
 
 """
-from config import DB_TYPE, MONGO_URI, POSTGRES_URI
+from backend.routes.config import DB_TYPE, MONGO_URI, POSTGRES_URI
 from pymongo import MongoClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
