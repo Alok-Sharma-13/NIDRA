@@ -200,6 +200,7 @@ def login():
 Branches:
 
 * `alok` → Development
+* `aditya` → Development
 * `main` → Stable release
 
 To merge:
@@ -224,4 +225,5 @@ git push origin main
 
 * **Alok Sharma**
 * **Aditya Yadav**
+
 
