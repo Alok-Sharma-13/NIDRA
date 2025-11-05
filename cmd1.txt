@@ -1,0 +1,1 @@
+curl -X GET http://localhost:8000/api/log/admin -H "User-Agent: MaliciousScanner/1.0" -H "X-Forwarded-For: 203.0.113.5" -v
