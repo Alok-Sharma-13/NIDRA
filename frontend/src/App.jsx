@@ -1,28 +1,32 @@
 import { useState, useContext } from 'react'
 import Sidebar from './components/Sidebar'
-import HoneyPot from './components/HoneyPot'
-import { sidebarContext } from './context/SidebarContext'
-import Alerts from './components/Alerts'
-import IPs from './components/IPs'
-import Roles from './components/Roles'
+
+import { sidebarDataContext } from './context/SidebarContext'
+
+import ScrollableTable from './Pages/ScrollableTable'
+import DataPanel from './Pages/DataPanel'
+import { Route, Routes } from 'react-router-dom'
+import BlockedIp from './Pages/BlockedIp'
+import High from './Pages/High'
+import Rule from './Pages/Rule'
+import Country from './Pages/Country'
 
 function App() {
 
- const {sidebarVal, setsidebarVal} = useContext(sidebarContext)
+  const { sidebarVal, setsidebarVal, dataPanel, setdataPanel, reqHandler, blockedIPHandler, countryHandler, ruleHandler, highHandler } = useContext(sidebarDataContext)
 
   return (
     <>
       <div className="flex h-screen">
-        {/* Sidebar */}
-        <div className="w-48 bg-gray-100 flex flex-col justify-between">
+        {/*  --------------Sidebar---------------- */}
+        <div className="w-[200px] bg-gray-100 pb-1 flex flex-col justify-between">
           <div className='flex flex-col gap-3.5'>
             <div className="px-5 py-4 font-bold text-blue-700 border-b text-2xl border-gray-300">NIDRA</div>
-            <Sidebar label="HoneyPot" />
-            <Sidebar label="IP" />
-            <Sidebar label="Role" />
-            <Sidebar label="DB" />
-            <Sidebar label="Alerts" />
-            <Sidebar label="blocked IPs" />
+            <Sidebar label="Request" eventHandler= {reqHandler} />
+            <Sidebar label="Country" eventHandler= {countryHandler} />
+            <Sidebar label="Blocked IP" eventHandler= {blockedIPHandler} />
+            <Sidebar label="Rule" eventHandler= {ruleHandler}/>
+            <Sidebar label="High" eventHandler={highHandler } />
           </div>
           <div>
             <Sidebar label="Settings" />
@@ -30,13 +34,20 @@ function App() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 bg-white p-4">
-          {/* <h1 className="text-xl font-semibold text-gray-700">Welcome to NIDRA Dashboard</h1> */}
-        {  sidebarVal == "HoneyPot" && <HoneyPot />}
-        {  sidebarVal == "IP" && <IPs />}
-        {  sidebarVal == "Alerts" && <Alerts />}
-        {  sidebarVal == "Role" && <Roles />}
+        <div className="flex-1 bg-white pl-1">
+
+             {/* { dataPanel ? <ScrollableTable /> : <DataPanel /> } */}
+             <Routes>
+              <Route path='/' element={<ScrollableTable />} />
+              <Route path='/datapanel' element={<DataPanel />} />
+              <Route path='/blockedip' element={<BlockedIp />} />
+              <Route path='/rule' element={<Rule />} />
+              <Route path='/high' element={<High />} />
+              <Route path='/countries' element={<Country />} />
+             </Routes>
+
         </div>
+
       </div>
 
     </>
