@@ -10,10 +10,11 @@ import BlockedIp from './Pages/BlockedIp'
 import High from './Pages/High'
 import Rule from './Pages/Rule'
 import Country from './Pages/Country'
+import Events from './Pages/Events'
 
 function App() {
 
-  const { sidebarVal, setsidebarVal, dataPanel, setdataPanel, reqHandler, blockedIPHandler, countryHandler, ruleHandler, highHandler } = useContext(sidebarDataContext)
+  const { sidebarVal, setsidebarVal, dataPanel, setdataPanel, reqHandler, blockedIPHandler, countryHandler, ruleHandler, highHandler, eventHandler } = useContext(sidebarDataContext)
 
   return (
     <>
@@ -22,8 +23,9 @@ function App() {
         <div className="w-[200px] bg-gray-100 pb-1 flex flex-col justify-between">
           <div className='flex flex-col gap-3.5'>
             <div className="px-5 py-4 font-bold text-blue-700 border-b text-2xl border-gray-300">NIDRA</div>
-            <Sidebar label="Request" eventHandler= {reqHandler} />
-            <Sidebar label="Country" eventHandler= {countryHandler} />
+            <Sidebar label="All Request" eventHandler= {reqHandler} />
+            <Sidebar label="Events" eventHandler= {eventHandler} />
+            <Sidebar label="country" eventHandler= {countryHandler} />
             <Sidebar label="Blocked IP" eventHandler= {blockedIPHandler} />
             <Sidebar label="Rule" eventHandler= {ruleHandler}/>
             <Sidebar label="High" eventHandler={highHandler } />
@@ -39,6 +41,7 @@ function App() {
              {/* { dataPanel ? <ScrollableTable /> : <DataPanel /> } */}
              <Routes>
               <Route path='/' element={<ScrollableTable />} />
+              <Route path='/events' element={<Events />} />
               <Route path='/datapanel' element={<DataPanel />} />
               <Route path='/blockedip' element={<BlockedIp />} />
               <Route path='/rule' element={<Rule />} />
