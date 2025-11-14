@@ -1,9 +1,16 @@
-import React, {useContext} from 'react'
+import React, {useContext, useEffect} from 'react'
 import { sidebarDataContext } from '../context/SidebarContext'
 
 const Events = () => {
-    const {eventData} = useContext(sidebarDataContext)
-  return (
+
+    const {eventData, handleDataPanel, setsidebarVal,  sidebarVal} = useContext(sidebarDataContext)
+
+    useEffect(() => {
+      setsidebarVal("Events")
+    }, [])
+    
+
+  return sidebarVal === "Events" && (
    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
       <div className="w-[92%] bg-white shadow-xl rounded-2xl overflow-hidden">
         <table className="w-full border-collapse">
@@ -21,7 +28,7 @@ const Events = () => {
           <table className="w-full border-collapse">
             <tbody>
               {eventData.map((item, index) => (
-                <tr key={index} className="border-b hover:bg-gray-100">
+                <tr key={index} onClick={() => { handleDataPanel(item) }} className="border-b hover:bg-gray-100">
                   <td className="p-3">
                     <span
                       className={`inline-block w-4 h-4 rounded-full ${

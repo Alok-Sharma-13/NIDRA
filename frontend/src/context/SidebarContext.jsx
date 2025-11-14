@@ -4,7 +4,8 @@ export let sidebarDataContext = createContext();
 
 const SidebarContext = ({children}) => {
 
-   const [sidebarVal, setsidebarVal] = useState("Request");
+   const [sidebarVal, setsidebarVal] = useState("All Request");
+   const [itmDataPannel, setItmDataPannel] = useState(null)
    const [dataPanel, setdataPanel] = useState(false)
    const navigate = useNavigate()
 
@@ -263,12 +264,13 @@ const SidebarContext = ({children}) => {
         navigate('/high')
     }
 
-    const handleDataPanel = () => {
+    const handleDataPanel = (item) => {
+      setItmDataPannel(item)
        navigate('/datapanel')
     }
 
    let value = {
-  sidebarVal, setsidebarVal, dataPanel, setdataPanel, reqHandler, blockedIPHandler, countryHandler, ruleHandler, highHandler, handleDataPanel, eventHandler, alltraficData, eventData
+  sidebarVal, setsidebarVal, dataPanel, setdataPanel, reqHandler, blockedIPHandler, countryHandler, ruleHandler, highHandler, handleDataPanel, eventHandler, alltraficData, eventData, itmDataPannel, setItmDataPannel
 }
   return (
     <sidebarDataContext.Provider value={value}>

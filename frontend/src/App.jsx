@@ -30,9 +30,7 @@ function App() {
             <Sidebar label="Rule" eventHandler= {ruleHandler}/>
             <Sidebar label="High" eventHandler={highHandler } />
           </div>
-          <div>
-            <Sidebar label="Settings" />
-          </div>
+         
         </div>
 
         {/* Main Content */}

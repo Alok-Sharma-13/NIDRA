@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {sidebarDataContext} from "../context/SidebarContext";
 
     // const data = [
@@ -19,19 +19,24 @@ import {sidebarDataContext} from "../context/SidebarContext";
 
 export default function ScrollableTable() {
 
-    const { handleDataPanel , alltraficData} = useContext(sidebarDataContext)
+    const {sidebarVal, setsidebarVal, alltraficData} = useContext(sidebarDataContext)
 
-  return (
+    useEffect(() => {
+       setsidebarVal("All Request")
+    }, [])
+    
+
+  return sidebarVal === "All Request" && (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
       <div className="w-[92%] bg-white shadow-xl rounded-2xl overflow-hidden">
         <table className="w-full border-collapse">
           <thead className="bg-gray-200 sticky top-0">
             <tr>
-              <th className="p-3 text-left">Status</th>
-              <th className="p-3 text-left">IP</th>
-              <th className="p-3 text-left">Time</th>
-              <th className="p-3 text-left">Path</th>
-              <th className="p-3 text-left">Country</th>
+              {/* <th className="p-3 text-left">Status</th> */}
+              <th className="p-3 text-center">IP</th>
+              <th className="p-3 text-center">Time</th>
+              <th className="p-3 text-center">Path</th>
+              <th className="p-3 text-center">Country</th>
             </tr>
           </thead>
         </table>
@@ -39,18 +44,18 @@ export default function ScrollableTable() {
           <table className="w-full border-collapse">
             <tbody>
               {alltraficData.map((item, index) => (
-                <tr key={index} onClick={handleDataPanel} className="border-b hover:bg-gray-100">
+                <tr key={index} className="border-b hover:bg-gray-100">
                   <td className="p-3">
-                    <span
+                    {/* <span
                       className={`inline-block w-4 h-4 rounded-full ${
                         item.status === "red" ? "bg-red-600" : "bg-black"
                       }`}
-                    ></span>
+                    ></span> */}
                   </td>
-                  <td className="p-3 text-center">{item.ip_address}</td>
-                  <td className="p-3">{item.timestamp.split('T')[0]}</td>
-                  <td className="p-3">{item.path}</td>
-                  <td className="p-3">{item.country}</td>
+                  <td className="p-3 text-left">{item.ip_address}</td>
+                  <td className="p-3 text-left">{item.timestamp.split('T')[0]}</td>
+                  <td className="p-3 text-left">{item.path}</td>
+                  <td className="p-3 text-left">{item.country}</td>
                 </tr>
               ))}
             </tbody>

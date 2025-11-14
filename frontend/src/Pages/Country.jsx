@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
+import { sidebarDataContext } from '../context/SidebarContext';
 
 const data = [
   { status: "black", ip: "127.0.0.1", time: "12:30", path: "/v1", country: "India" },
@@ -18,14 +19,32 @@ const data = [
 
 const Country = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
+  const {sidebarVal, setsidebarVal} = useContext(sidebarDataContext)
+  const [allCountry, setallCountry] = useState(data)
+  const [filteredCountry, setfilteredCountry] = useState(data || [])
 
   const countries = ["India", "China", "Pakistan", "France", "Indonesia"];
 
+  useEffect(() => {
+    setsidebarVal("country")
+    handleCountry()
+  
+  }, [selectedCountry])
+  
+
+   const handleCountry = () => {
+      if(selectedCountry){
+       const country = allCountry.filter((item)=> item.country === selectedCountry)
+       console.log(country)
+       setfilteredCountry(country)         
+      } else {
+        setfilteredCountry(allCountry)
+      }
+   }
+
   return (
     // <div className='flex items-center justify-center text-4xl font-semibold h-screen'>Country</div>
-
-
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-2">
+   sidebarVal === "country" && <div className="flex justify-center items-center min-h-screen bg-gray-100 p-2">
       <div className="w-[80%] bg-white border border-gray-300 rounded-xl shadow-md overflow-hidden">
         <table className="w-full border-collapse">
           <thead className="bg-blue-900 text-white">
@@ -34,10 +53,10 @@ const Country = () => {
               <th className="p-3 text-left">
                 <select
                   value={selectedCountry}
-                  onChange={(e) => setSelectedCountry(e.target.value)}
-                  className="border border-gray-400 rounded-md px-3 text-white py-1 text-gray-700 focus:outline-none"
+                  onChange={(e) => { setSelectedCountry(e.target.value); handleCountry(e); }}
+                  className="border border-gray-400 rounded-md px-3 py-1 text-white focus:outline-none"
                 >
-                  <option value="" className='text-black'>Select</option>
+                  <option value="" className='text-black'>All</option>
                   {countries.map((country, index) => (
                     <option key={index} className='text-black' value={country}>
                       {country}
@@ -61,7 +80,7 @@ const Country = () => {
         <div className="max-h-[600px] overflow-y-auto">
           <table className="w-full border-collapse">
             <tbody>
-              {data.map((item, index) => (
+              {filteredCountry.map((item, index) => (
                 <tr key={index} className="border-b hover:bg-gray-100">
                   <td className="p-3">
                     <span
