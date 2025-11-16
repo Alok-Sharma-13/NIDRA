@@ -20,6 +20,8 @@ from core.honeypot_manager import manager as honeypot_manager
 from core.alert_dispatcher import dispatch_alert
 from backend import database_config
 
+from core.country_blocker import CountryBlocker     # ✅ ADDED
+
 BLOCKED_IPS_FILE = "data/log/blocked_ips.txt"
 
 
@@ -30,14 +32,23 @@ class NidraSDK:
         self.SessionLocal = database_config.SessionLocal if self.db_type == "postgresql" else None
         self.engine = RuleEngine()
         self.rule_state = {}
+        self.country_blocker = CountryBlocker()      # ✅ ADDED
 
     def capture_request(self, request_obj):
         log = sniff_request(request_obj)
         if not log:
             return None
 
+        ip = log["ip_address"]
+
+        # --------------- COUNTRY BLOCKING (ADDED) ---------------- #
+        if not self.country_blocker.is_ip_allowed(ip):
+            self.block_ip(ip)
+            return "403 Forbidden - Country Blocked", 403
+        # --------------------------------------------------------- #
+
         # Check if IP is blocked
-        if self.is_ip_blocked(log["ip_address"]):
+        if self.is_ip_blocked(ip):
             return "403 Forbidden - IP Blocked", 403
 
         self.log_traffic(log)
