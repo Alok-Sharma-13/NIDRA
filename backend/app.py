@@ -14,6 +14,7 @@ from backend.routes.rule_routes import rules_bp
 from core.honeypot_manager import register_all_honeypots, manager as honeypot_manager
 from core.alert_dispatcher import log_to_file  
 from core.ip_blocker import IPBlocker 
+from core.country_blocker import CountryBlocker   # ✅ ADDED
 import json
 
 app = Flask(__name__)
@@ -23,11 +24,21 @@ register_all_honeypots(app)
 
 engine = RuleEngine()
 rule_state = {}
+country_blocker = CountryBlocker()   # ✅ ADDED
+
 
 @app.before_request
 def full_traffic_analysis():
     log = sniff_request(request)
     if log:
+
+        # ---------------- COUNTRY BLOCK CHECK (ADDED) ---------------- #
+        ip = log.get("ip_address")
+        if ip and not country_blocker.is_ip_allowed(ip):
+            IPBlocker().block(ip)
+            return "403 Forbidden - Country Blocked", 403
+        # ------------------------------------------------------------- #
+
         try:
             os.makedirs("data/log", exist_ok=True)
             with open("data/log/all_traffic.ndjson", "a") as f:
