@@ -4,13 +4,16 @@ import './index.css'
 import App from './App.jsx'
 import SidebarContext from './context/SidebarContext.jsx'
 import { BrowserRouter } from 'react-router-dom'
+import AuthContext from './context/AuthContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-    <SidebarContext>
-       <App />
-    </SidebarContext>
+      <AuthContext>
+        <SidebarContext>
+          <App />
+        </SidebarContext>
+      </AuthContext>
     </BrowserRouter>
   </StrictMode>,
 )
