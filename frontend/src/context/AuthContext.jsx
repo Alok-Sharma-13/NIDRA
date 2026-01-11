@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-
+import { toast } from 'react-toastify';
 export const AuthDataContext = createContext();
 
 const AuthContext = ({children}) => {
@@ -12,16 +12,19 @@ const AuthContext = ({children}) => {
             // const {data} = await axios.post(`/api/auth/${state}`, credentials);
             // console.log(data)
             setUserData(credentials)
+            toast("logged in successfully")
             navigate("/")
-            alert("logged in successfully")
         } catch (error) {
             // console.log(error.message)
-            // toast.error(error.message)
+            toast.error(error.message)
         }
     }
 
     const logout = () => {
           setUserData(null)
+          toast("log Out Successfully")
+          navigate("/login")
+
     }
 
 

@@ -35,7 +35,7 @@ const Country = () => {
    const handleCountry = () => {
       if(selectedCountry){
        const country = allCountry.filter((item)=> item.country === selectedCountry)
-       console.log(country)
+      //  console.log(country)
        setfilteredCountry(country)         
       } else {
         setfilteredCountry(allCountry)

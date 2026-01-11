@@ -17,18 +17,21 @@ const Login = () => {
 
   }
 
-  return (
-    <div  style={{
-    backgroundImage: `linear-gradient(to bottom, rgba(59,130,246,0.7), rgba(147,51,234,0.7)), url(${Nidra})`
-  }} className={`min-h-screen bg-contain bg-center flex items-center justify-center gap-3 max-sm:flex-col backdrop-blur-3xl`}>
 
+  return (
+  //   <div  style={{
+  //   backgroundImage: `linear-gradient(to bottom, rgba(59,130,246,0.7), rgba(147,51,234,0.7)), url(${Nidra})`
+  // }} className={`min-h-screen bg-contain bg-center flex items-center justify-center gap-3 max-sm:flex-col backdrop-blur-3xl`}>
+
+  <div className="relative h-full w-full bg-slate-950">
+    <div className="flex justify-center items-center absolute bottom-0 left-0 right-0 top-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px]">
       {/* ---------------left--------------- */}
 
       {/* <img src={Nidra} alt="Nidra Logo" className='w-[min(30vw,300px)] rounded-lg' /> */}
 
       {/* -----------------right--------------- */}
 
-      <form onSubmit={onSubmitHandler} className='border-2 bg-transparent text-white border-blue-500 p-6 flex flex-col gap-6 rounded-lg  shadow-blue-600 shadow-2xl '>
+      <form onSubmit={onSubmitHandler} className='border-2 bg-transparent text-white border-blue-50 p-6 flex flex-col gap-6 rounded-lg  shadow-blue-400/60 shadow-lg '>
         <h1 className='flex text-3xl font-semibold items-center w-full justify-between'>
           {currState}
         </h1>
@@ -49,7 +52,7 @@ const Login = () => {
         </button>
 
         <div className='flex gap-2 text-md text-white-800'>
-          <input type="checkbox" />
+          <input type="checkbox" required />
           <p>Agree to the term of use and privacy.</p>
         </div>
 
@@ -70,6 +73,7 @@ const Login = () => {
 
       </form>
 
+    </div>
     </div>
   )
 }
