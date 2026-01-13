@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react'
 import Sidebar from './components/Sidebar'
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify'
 import { sidebarDataContext } from './context/SidebarContext'
 
 import ScrollableTable from './Pages/ScrollableTable'
@@ -22,7 +22,7 @@ function App() {
 
   return (
    <>
-      <div className="flex h-screen relative">
+      <div className="flex min-h-screen max-h-screen relative">
 
         {/*  --------------Sidebar---------------- */}
      { userData &&  <div className="w-[200px] bg-gray-100 pb-1 flex ">
@@ -57,7 +57,7 @@ function App() {
       { userData && <button onClick={logout} className='cursor-pointer absolute right-4 top-4 px-6 py-2.5 bg-red-500 mx-1 text-white font-semibold rounded-lg'>Logout</button>}
       </div>
       {/* </div> */}
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar={true} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light"/>
+      <ToastContainer position="top-right" autoClose={2000} hideProgressBar={true} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="dark"/>
     </> 
   )
 }

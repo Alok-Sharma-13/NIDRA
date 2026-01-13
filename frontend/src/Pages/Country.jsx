@@ -44,7 +44,7 @@ const Country = () => {
 
   return (
     // <div className='flex items-center justify-center text-4xl font-semibold h-screen'>Country</div>
-   sidebarVal === "country" && <div className="flex justify-center items-center min-h-screen bg-gray-100 p-2">
+   sidebarVal === "country" && <div className="flex justify-center items-center bg-gray-100 pr-4 pt-4">
       <div className="w-[80%] bg-white border border-gray-300 rounded-xl shadow-md overflow-hidden">
         <table className="w-full border-collapse">
           <thead className="bg-blue-900 text-white">
@@ -77,7 +77,7 @@ const Country = () => {
               ))}
           </tbody> */}
         </table>
-        <div className="max-h-[600px] overflow-y-auto">
+        <div className="max-h-[535px] overflow-y-auto">
           <table className="w-full border-collapse">
             <tbody>
               {filteredCountry.map((item, index) => (

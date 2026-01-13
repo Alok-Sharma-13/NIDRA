@@ -27,8 +27,8 @@ export default function ScrollableTable() {
     
 
   return sidebarVal === "All Request" && (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
-      <div className="w-[92%] bg-white shadow-xl rounded-2xl overflow-hidden">
+    <div className="flex justify-center items-center bg-gray-100 pr-8 pt-6">
+      <div className="w-[82%] bg-white shadow-xl rounded-2xl overflow-hidden">
         <table className="w-full border-collapse">
           <thead className="bg-gray-200 sticky top-0">
             <tr>
@@ -40,7 +40,7 @@ export default function ScrollableTable() {
             </tr>
           </thead>
         </table>
-        <div className="max-h-[600px] overflow-y-auto">
+        <div className="max-h-[535px] overflow-y-auto">
           <table className="w-full border-collapse">
             <tbody>
               {alltraficData.map((item, index) => (
