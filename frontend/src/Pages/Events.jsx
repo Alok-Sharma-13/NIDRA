@@ -24,7 +24,7 @@ const Events = () => {
             </tr>
           </thead>
         </table>
-        <div className="max-h-[535px] overflow-y-auto">
+        <div className="max-h-[590px] overflow-y-auto">
           <table className="w-full border-collapse">
             <tbody>
               {eventData.map((item, index) => (

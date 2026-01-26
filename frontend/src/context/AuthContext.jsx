@@ -12,7 +12,7 @@ const AuthContext = ({children}) => {
             // const {data} = await axios.post(`/api/auth/${state}`, credentials);
             // console.log(data)
             setUserData(credentials)
-            toast("logged in successfully")
+            toast("Logged in successfully")
             navigate("/")
         } catch (error) {
             // console.log(error.message)
@@ -22,7 +22,7 @@ const AuthContext = ({children}) => {
 
     const logout = () => {
           setUserData(null)
-          toast("log Out Successfully")
+          toast("Logout Successfully")
           navigate("/login")
 
     }

@@ -40,7 +40,7 @@ export default function ScrollableTable() {
             </tr>
           </thead>
         </table>
-        <div className="max-h-[535px] overflow-y-auto">
+        <div className="max-h-[590px] overflow-y-auto">
           <table className="w-full border-collapse">
             <tbody>
               {alltraficData.map((item, index) => (
