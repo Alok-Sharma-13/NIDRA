@@ -11,8 +11,8 @@ const Events = () => {
     
 
   return sidebarVal === "Events" && (
-   <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
-      <div className="w-[92%] bg-white shadow-xl rounded-2xl overflow-hidden">
+   <div className="flex justify-center items-center bg-gray-100 pr-12 pt-6">
+      <div className="w-[85%] bg-white shadow-xl rounded-2xl overflow-hidden">
         <table className="w-full border-collapse">
           <thead className="bg-gray-200 sticky top-0">
             <tr>
@@ -24,7 +24,7 @@ const Events = () => {
             </tr>
           </thead>
         </table>
-        <div className="max-h-[600px] overflow-y-auto">
+        <div className="max-h-[535px] overflow-y-auto">
           <table className="w-full border-collapse">
             <tbody>
               {eventData.map((item, index) => (
@@ -38,7 +38,7 @@ const Events = () => {
                   </td>
                   <td className="p-3 text-center">{item.ip_address}</td>
                   <td className="p-3">{item.timestamp.split('T')[0]}</td>
-                  <td className="p-3">{item.path}</td>
+                  <td className="p-3 w-12 whitespace-nowrap overflow-x-auto">{item.path}</td>
                   <td className="p-3">{item.rule}</td>
                 </tr>
               ))}

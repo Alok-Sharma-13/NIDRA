@@ -62,7 +62,7 @@ const SidebarContext = ({children}) => {
     "severity": "high",
     "timestamp": "2025-11-03T15:53:34.722990",
     "ip_address": "127.0.0.2",
-    "path": "/products?id=1 union select password from users --",
+    "path": "/products?id=1 union",
     "user_agent": "Mozilla/5.0",
     "headers": {
       "X-Test": "SQLi-Test"
@@ -85,7 +85,7 @@ const SidebarContext = ({children}) => {
     "ip_address": "127.0.0.1",
     "path": "/api/log/admin",
     "method": "GET",
-    "timestamp": "2025-11-03 21:23:38",
+    "timestamp": "2025-11-03T21:23:38",
     "rule": "Honeypot Path Accessed: ",
     "severity": "High"
   },
@@ -164,7 +164,7 @@ const SidebarContext = ({children}) => {
     "severity": "high",
     "timestamp": "2025-11-03T15:53:34.722990",
     "ip_address": "127.0.0.2",
-    "path": "/products?id=1 union select password from users --",
+    "path": "/products?id=1",
     "user_agent": "Mozilla/5.0",
     "headers": {
       "X-Test": "SQLi-Test"
@@ -187,7 +187,7 @@ const SidebarContext = ({children}) => {
     "ip_address": "127.0.0.1",
     "path": "/api/log/admin",
     "method": "GET",
-    "timestamp": "2025-11-03 21:23:38",
+    "timestamp": "2025-11-03T21:23:38",
     "rule": "Honeypot Path Accessed: ",
     "severity": "High"
   },
