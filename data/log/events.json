@@ -3,7 +3,7 @@
     "rule": "XSS Attempt",
     "description": "Signature match for pattern: <script.*?>",
     "severity": "high",
-    "timestamp": "2025-12-15T07:33:53.906638",
+    "timestamp": "2026-01-31T15:51:55.162914",
     "ip_address": "127.0.0.1",
     "path": "/search?q=<script>alert(1)</script>",
     "user_agent": "curl/8.1",
@@ -15,126 +15,7 @@
     "rule": "Suspicious User-Agent",
     "description": "Signature match for pattern: sqlmap|nmap|curl",
     "severity": "medium",
-    "timestamp": "2025-12-15T07:33:53.906638",
-    "ip_address": "127.0.0.1",
-    "path": "/search?q=<script>alert(1)</script>",
-    "user_agent": "curl/8.1",
-    "headers": {
-      "X-Test": "XSS-Test"
-    }
-  },
-  {
-    "rule": "SQL Injection",
-    "description": "Signature match for pattern: (union select|drop table|--)",
-    "severity": "high",
-    "timestamp": "2025-12-15T07:33:56.180044",
-    "ip_address": "127.0.0.2",
-    "path": "/products?id=1 union select password from users --",
-    "user_agent": "Mozilla/5.0",
-    "headers": {
-      "X-Test": "SQLi-Test"
-    }
-  },
-  {
-    "rule": "Suspicious User-Agent",
-    "description": "Signature match for pattern: sqlmap|nmap|curl",
-    "severity": "medium",
-    "timestamp": "2025-12-15T07:33:58.314022",
-    "ip_address": "127.0.0.3",
-    "path": "/about",
-    "user_agent": "sqlmap/1.5",
-    "headers": {
-      "X-Test": "UserAgent-Test"
-    }
-  },
-  {
-    "source": "honeypot",
-    "ip": "127.0.0.1",
-    "path": "/api/log/admin",
-    "method": "GET",
-    "timestamp": "2025-12-15 13:04:00",
-    "rule": "Honeypot Path Accessed: /api/log/admin",
-    "severity": "High"
-  },
-  {
-    "rule": "Broken Authentication",
-    "description": "Threshold exceeded: 5 in 120s for username",
-    "severity": "high",
-    "timestamp": "2025-12-15T07:34:08.192146",
-    "ip_address": "127.0.0.10",
-    "username": "victim",
-    "event": "login_failure",
-    "path": "/api/login"
-  },
-  {
-    "rule": "Broken Authentication",
-    "description": "Threshold exceeded: 5 in 120s for username",
-    "severity": "high",
-    "timestamp": "2025-12-15T07:34:08.247471",
-    "ip_address": "127.0.0.10",
-    "username": "victim",
-    "event": "login_failure",
-    "path": "/api/login"
-  },
-  {
-    "rule": "Broken Access Control / IDOR",
-    "description": "Signature match for pattern: /user/\\d+|/profile/\\d+|/invoice/\\d+",
-    "severity": "critical",
-    "timestamp": "2025-12-15T07:34:10.440428",
-    "ip_address": "127.0.0.11",
-    "path": "/api/user/12345",
-    "username": "attacker",
-    "headers": {
-      "X-Test": "IDOR-Test"
-    }
-  },
-  {
-    "rule": "Remote Code Execution / Command Injection",
-    "description": "Signature match for pattern: (\\b(cat|ls|whoami|curl|wget|bash|sh)\\b|;|&&|\\|)",
-    "severity": "critical",
-    "timestamp": "2025-12-15T07:34:12.561081",
-    "ip_address": "127.0.0.12",
-    "path": "/api/run",
-    "body": "cat /etc/passwd; ls -la && whoami",
-    "username": "attacker"
-  },
-  {
-    "rule": "File Upload Abuse",
-    "description": "Signature match for pattern: (\\.php$|\\.jsp$|\\.asp$|\\.exe$|\\.sh$|\\.js$|\\.jpg\\.php$|\\.png\\.php$)",
-    "severity": "high",
-    "timestamp": "2025-12-15T07:34:14.694376",
-    "ip_address": "127.0.0.13",
-    "path": "/api/upload",
-    "filename": "image.jpg.php",
-    "username": "attacker"
-  },
-  {
-    "rule": "Insecure Deserialization",
-    "description": "Signature match for pattern: (pickle|object|javaSerialized|Y29tcGxleA==|__reduce__)",
-    "severity": "critical",
-    "timestamp": "2025-12-15T07:34:16.849429",
-    "ip_address": "127.0.0.14",
-    "path": "/api/import",
-    "body": "pickle.loads(b'Y29tcGxleA==')",
-    "username": "attacker"
-  },
-  {
-    "rule": "XSS Attempt",
-    "description": "Signature match for pattern: <script.*?>",
-    "severity": "high",
-    "timestamp": "2026-01-14T02:54:16.155766",
-    "ip_address": "127.0.0.1",
-    "path": "/search?q=<script>alert(1)</script>",
-    "user_agent": "curl/8.1",
-    "headers": {
-      "X-Test": "XSS-Test"
-    }
-  },
-  {
-    "rule": "Suspicious User-Agent",
-    "description": "Signature match for pattern: sqlmap|nmap|curl",
-    "severity": "medium",
-    "timestamp": "2026-01-14T02:54:16.155766",
+    "timestamp": "2026-01-31T15:51:55.162914",
     "ip_address": "127.0.0.1",
     "path": "/search?q=<script>alert(1)</script>",
     "user_agent": "curl/8.1",
@@ -146,7 +27,7 @@
     "rule": "SQL Injection",
     "description": "Signature match for pattern: (union select|drop table|--)",
     "severity": "high",
-    "timestamp": "2026-01-14T02:54:21.006511",
+    "timestamp": "2026-01-31T15:51:57.480551",
     "ip_address": "127.0.0.2",
     "path": "/products?id=1 union select password from users --",
     "user_agent": "Mozilla/5.0",
@@ -158,83 +39,12 @@
     "rule": "Suspicious User-Agent",
     "description": "Signature match for pattern: sqlmap|nmap|curl",
     "severity": "medium",
-    "timestamp": "2026-01-14T02:54:23.269634",
+    "timestamp": "2026-01-31T15:51:59.649690",
     "ip_address": "127.0.0.3",
     "path": "/about",
     "user_agent": "sqlmap/1.5",
     "headers": {
       "X-Test": "UserAgent-Test"
     }
-  },
-  {
-    "source": "honeypot",
-    "ip": "127.0.0.1",
-    "path": "/api/log/admin",
-    "method": "GET",
-    "timestamp": "2026-01-14 08:24:25",
-    "rule": "Honeypot Path Accessed: /api/log/admin",
-    "severity": "High"
-  },
-  {
-    "rule": "Broken Authentication",
-    "description": "Threshold exceeded: 5 in 120s for username",
-    "severity": "high",
-    "timestamp": "2026-01-14T02:54:33.246371",
-    "ip_address": "127.0.0.10",
-    "username": "victim",
-    "event": "login_failure",
-    "path": "/api/login"
-  },
-  {
-    "rule": "Broken Authentication",
-    "description": "Threshold exceeded: 5 in 120s for username",
-    "severity": "high",
-    "timestamp": "2026-01-14T02:54:33.411642",
-    "ip_address": "127.0.0.10",
-    "username": "victim",
-    "event": "login_failure",
-    "path": "/api/login"
-  },
-  {
-    "rule": "Broken Access Control / IDOR",
-    "description": "Signature match for pattern: /user/\\d+|/profile/\\d+|/invoice/\\d+",
-    "severity": "critical",
-    "timestamp": "2026-01-14T02:54:35.659836",
-    "ip_address": "127.0.0.11",
-    "path": "/api/user/12345",
-    "username": "attacker",
-    "headers": {
-      "X-Test": "IDOR-Test"
-    }
-  },
-  {
-    "rule": "Remote Code Execution / Command Injection",
-    "description": "Signature match for pattern: (\\b(cat|ls|whoami|curl|wget|bash|sh)\\b|;|&&|\\|)",
-    "severity": "critical",
-    "timestamp": "2026-01-14T02:54:37.927712",
-    "ip_address": "127.0.0.12",
-    "path": "/api/run",
-    "body": "cat /etc/passwd; ls -la && whoami",
-    "username": "attacker"
-  },
-  {
-    "rule": "File Upload Abuse",
-    "description": "Signature match for pattern: (\\.php$|\\.jsp$|\\.asp$|\\.exe$|\\.sh$|\\.js$|\\.jpg\\.php$|\\.png\\.php$)",
-    "severity": "high",
-    "timestamp": "2026-01-14T02:54:40.198294",
-    "ip_address": "127.0.0.13",
-    "path": "/api/upload",
-    "filename": "image.jpg.php",
-    "username": "attacker"
-  },
-  {
-    "rule": "Insecure Deserialization",
-    "description": "Signature match for pattern: (pickle|object|javaSerialized|Y29tcGxleA==|__reduce__)",
-    "severity": "critical", 
-    "timestamp": "2026-01-14T02:54:42.438725",
-    "ip_address": "127.0.0.14",
-    "path": "/api/import",
-    "body": "pickle.loads(b'Y29tcGxleA==')",
-    "username": "attacker"
   }
 ]
