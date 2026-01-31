@@ -25,4 +25,4 @@ build/
 Thumbs.db
 
 # GeoIP database
-*.mmdb
+# *.mmdb

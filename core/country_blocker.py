@@ -3,7 +3,7 @@ import json
 import geoip2.database
 
 COUNTRY_JSON = "data/country.json"
-GEOIP_DB = "GeoLite2-Country.mmdb"
+GEOIP_DB = os.path.join("data", "GeoLite2-Country.mmdb")
 
 class CountryBlocker:
     def __init__(self):
