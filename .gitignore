@@ -4,13 +4,8 @@ __pycache__/
 .env
 
 # Python and Json files
-client.py
 config.py
-test.json 
-honeypots.json
-all_traffic.ndjson
-events.json
-blocked_ips.txt
+
 # Node/React
 node_modules/
 dist/

@@ -1,0 +1,12 @@
+[
+  {
+    "path": "/api/log/admin",
+    "visible": true,
+    "fake_content": "<h1>Admin Panel</h1><p>Last login: root@server</p>"
+  },
+  {
+    "path": "/users/root/backup",
+    "visible": true,
+    "fake_content": "<h1>Backup Dump</h1><p>File: dump.sql</p>"
+  }
+]
