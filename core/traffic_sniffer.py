@@ -9,27 +9,34 @@ Date: June 2025
 from datetime import datetime
 from core.geoip_lookup import GeoIPService
 
-
 geoIP = GeoIPService()
+
+# APIs we do NOT want to log
+EXCLUDED_PATHS = {
+    "/api/traffic",
+    "/api/events",
+    "/api/blocked-ips"
+}
+
 
 def sniff_request(request):
     """
     Extracts key metadata from the incoming HTTP request.
-
-    Parameters:
-        request (Flask/FastAPI Request): The incoming HTTP request object.
-
-    Returns:
-        dict: A structured log containing request metadata.
     """
 
     try:
+        path = request.path if hasattr(request, "path") else str(request.url.path)
+
+        # 🔴 SKIP internal viewer APIs
+        if path in EXCLUDED_PATHS:
+            return None
+
         ip_address = (
             request.headers.get("X-Forwarded-For")
             or request.remote_addr
             or request.client.host  # For FastAPI
         )
-        
+
         country = geoIP.lookup_country(ip_address)
 
         log_data = {
@@ -37,7 +44,7 @@ def sniff_request(request):
             "ip_address": ip_address,
             "country": country,
             "method": request.method,
-            "path": request.path if hasattr(request, "path") else str(request.url.path),
+            "path": path,
             "headers": dict(request.headers),
             "user_agent": request.headers.get("User-Agent", "Unknown"),
         }

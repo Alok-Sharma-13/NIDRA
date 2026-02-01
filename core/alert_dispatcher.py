@@ -29,6 +29,8 @@ def log_to_file(alert: dict):
             data = []
 
         data.append(alert)
+        # data.insert(0, alert)
+
 
         with open(ALERT_FILE, "w") as f:
             json.dump(data, f, indent=2)

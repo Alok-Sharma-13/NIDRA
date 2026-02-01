@@ -15,6 +15,8 @@ from core.honeypot_manager import register_all_honeypots, manager as honeypot_ma
 from core.alert_dispatcher import log_to_file  
 from core.ip_blocker import IPBlocker 
 from core.country_blocker import CountryBlocker   # ✅ ADDED
+from routes.view import viewer_bp
+
 import json
 
 app = Flask(__name__)
@@ -30,32 +32,35 @@ country_blocker = CountryBlocker()   # ✅ ADDED
 @app.before_request
 def full_traffic_analysis():
     log = sniff_request(request)
-    if log:
 
-        # ---------------- COUNTRY BLOCK CHECK (ADDED) ---------------- #
-        ip = log.get("ip_address")
-        if ip and not country_blocker.is_ip_allowed(ip):
-            IPBlocker().block(ip)
-            return "403 Forbidden - Country Blocked", 403
-        # ------------------------------------------------------------- #
+    # 🔴 If request is excluded (e.g. /api/traffic), skip logging & analysis
+    if log is None:
+        return
 
-        try:
-            os.makedirs("data/log", exist_ok=True)
-            with open("data/log/all_traffic.ndjson", "a") as f:
-                f.write(json.dumps(log) + "\n")
-        except Exception as e:
-            print(f"[Logger] Failed to log all traffic: {e}")
+    # ---------------- COUNTRY BLOCK CHECK ---------------- #
+    ip = log.get("ip_address")
+    if ip and not country_blocker.is_ip_allowed(ip):
+        IPBlocker().block(ip)
+        return "403 Forbidden - Country Blocked", 403
+    # ----------------------------------------------------- #
 
-        # Check honeypot AFTER logging
-        visible_paths = [hp["path"] for hp in honeypot_manager.get_visible_honeypots()]
-        if request.path in visible_paths:
-            return honeypot_manager.handle_trigger(request.path)
+    try:
+        os.makedirs("data/log", exist_ok=True)
+        with open("data/log/all_traffic.ndjson", "a") as f:
+            f.write(json.dumps(log) + "\n")
+    except Exception as e:
+        print(f"[Logger] Failed to log all traffic: {e}")
 
-        # Analyze
-        alerts = engine.analyze(log, rule_state)
-        if alerts:
-            for alert in alerts:
-                log_to_file(alert)
+    # Honeypot check
+    visible_paths = [hp["path"] for hp in honeypot_manager.get_visible_honeypots()]
+    if request.path in visible_paths:
+        return honeypot_manager.handle_trigger(request.path)
+
+    # Rule analysis
+    alerts = engine.analyze(log, rule_state)
+    if alerts:
+        for alert in alerts:
+            log_to_file(alert)
 
 
 @app.teardown_appcontext
@@ -66,6 +71,8 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(log_bp)  
 app.register_blueprint(rules_bp)
 app.register_blueprint(ip_blocker_bp)  
+app.register_blueprint(viewer_bp)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

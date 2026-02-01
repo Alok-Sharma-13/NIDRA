@@ -1,1 +1,33 @@
 curl -X GET http://localhost:8000/api/log/admin -H "User-Agent: MaliciousScanner/1.0" -H "X-Forwarded-For: 203.0.113.5" -v
+
+
+1️⃣ Traffic logs (all_traffic.ndjson → /api/traffic)
+🔹 Get latest 50 traffic logs
+
+
+curl "http://localhost:5000/api/traffic?start=0&limit=50"
+
+
+🔹 Get older traffic logs (scroll down)
+
+curl "http://localhost:5000/api/traffic?start=50&limit=50"
+
+
+2️⃣ Security events / alerts (events.json → /api/events)
+🔹 Get latest 20 alerts
+
+curl "http://localhost:5000/api/events?start=0&limit=20"
+
+
+🔹 Get older alerts (scroll down)
+
+curl "http://localhost:5000/api/events?start=20&limit=20"
+
+
+3️⃣ Blocked IPs (blocked_ips.txt → /api/blocked-ips)
+🔹 Get all blocked IPs
+
+curl "http://localhost:5000/api/blocked-ips"
+
+
+(No paging needed here)
