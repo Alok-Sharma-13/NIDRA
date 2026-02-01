@@ -2,6 +2,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from flask_cors import CORS
 from flask import Flask, request
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -20,6 +21,18 @@ from routes.view import viewer_bp
 import json
 
 app = Flask(__name__)
+
+CORS(
+    app,
+    resources={
+        r"/api/*": {
+            "origins": ["http://localhost:8551"],
+            "methods": ["GET", "POST", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"]
+        }
+    }
+)
+
 limiter = Limiter(get_remote_address)
 limiter.init_app(app)
 register_all_honeypots(app)
@@ -74,5 +87,7 @@ app.register_blueprint(ip_blocker_bp)
 app.register_blueprint(viewer_bp)
 
 
+# if __name__ == "__main__":
+#     app.run(debug=True)
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=8000, debug=True)
