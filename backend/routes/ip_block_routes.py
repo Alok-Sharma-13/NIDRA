@@ -34,38 +34,3 @@ def get_blocked_ips():
     return jsonify({"blocked_ips": ip_blocker.get_blocked_ips()}), 200
 
 
-# ---------------------- COUNTRY BLOCKING ------------------------ #
-
-@ip_blocker_bp.route("/api/country/block", methods=["POST"])
-def block_country():
-    data = request.get_json()
-    iso = data.get("country")
-
-    if not iso:
-        return jsonify({"success": False, "error": "Country ISO missing"}), 400
-
-    ok = country_blocker.block_country(iso)
-    if not ok:
-        return jsonify({"success": False, "error": "Invalid country code"}), 400
-
-    return jsonify({"success": True, "message": f"Country {iso} blocked"}), 200
-
-
-@ip_blocker_bp.route("/api/country/unblock", methods=["POST"])
-def unblock_country():
-    data = request.get_json()
-    iso = data.get("country")
-
-    if not iso:
-        return jsonify({"success": False, "error": "Country ISO missing"}), 400
-
-    ok = country_blocker.unblock_country(iso)
-    if not ok:
-        return jsonify({"success": False, "error": "Invalid country code"}), 400
-
-    return jsonify({"success": True, "message": f"Country {iso} allowed"}), 200
-
-
-@ip_blocker_bp.route("/api/country/list", methods=["GET"])
-def list_countries():
-    return jsonify({"countries": country_blocker.get_rules()}), 200
