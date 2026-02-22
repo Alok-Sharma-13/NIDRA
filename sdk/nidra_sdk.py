@@ -19,7 +19,6 @@ from core.rule_engine import RuleEngine
 from core.honeypot_manager import manager as honeypot_manager
 from core.alert_dispatcher import dispatch_alert
 from backend import database_config
-
 from core.country_blocker import CountryBlocker     # ✅ ADDED
 
 BLOCKED_IPS_FILE = "data/log/blocked_ips.txt"
@@ -75,7 +74,7 @@ class NidraSDK:
     def log_traffic(self, log):
         try:
             os.makedirs("data/log", exist_ok=True)
-            with open("data/log/all_traffic.json", "a") as f:
+            with open("data/log/all_traffic.ndjson", "a") as f:
                 f.write(json.dumps(log) + "\n")
         except Exception as e:
             print(f"[NIDRA SDK] Failed to write all traffic: {e}")

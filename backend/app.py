@@ -17,6 +17,7 @@ from core.alert_dispatcher import log_to_file
 from core.ip_blocker import IPBlocker 
 from core.country_blocker import CountryBlocker   # ✅ ADDED
 from routes.view import viewer_bp
+from routes.country_routes import country_bp
 
 import json
 
@@ -85,6 +86,7 @@ app.register_blueprint(log_bp)
 app.register_blueprint(rules_bp)
 app.register_blueprint(ip_blocker_bp)  
 app.register_blueprint(viewer_bp)
+app.register_blueprint(country_bp)
 
 
 # if __name__ == "__main__":
