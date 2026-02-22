@@ -30,7 +30,9 @@ def unblock_ip():
 
 
 @ip_blocker_bp.route("/api/blocked_ips", methods=["GET"])
-def get_blocked_ips():
-    return jsonify({"blocked_ips": ip_blocker.get_blocked_ips()}), 200
-
+def list_blocked_ips():
+    return jsonify({
+        "success": True,
+        "blocked_ips": ip_blocker.get_blocked_ips()
+    }), 200
 

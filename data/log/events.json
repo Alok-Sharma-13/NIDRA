@@ -3,30 +3,10 @@
     "rule": "XSS Attempt",
     "description": "Signature match for pattern: <script.*?>",
     "severity": "high",
-    "timestamp": "2026-02-22T09:40:00.221120",
+    "timestamp": "2026-02-22T11:13:51.438976",
     "ip_address": "127.0.0.1",
     "method": "GET",
     "path": "/search?q=<script>alert(1)</script>",
-    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
-  },
-  {
-    "rule": "SQL Injection",
-    "description": "Signature match for pattern: (union select|drop table|--)",
-    "severity": "high",
-    "timestamp": "2026-02-22T09:43:40.004317",
-    "ip_address": "127.0.0.1",
-    "method": "GET",
-    "path": "/search?q=1 union select password from users --",
-    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
-  },
-  {
-    "rule": "SQL Injection",
-    "description": "Signature match for pattern: (union select|drop table|--)",
-    "severity": "high",
-    "timestamp": "2026-02-22T09:45:20.814912",
-    "ip_address": "127.0.0.1",
-    "method": "GET",
-    "path": "/search?q=1 union select password from users --",
     "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
   }
 ]

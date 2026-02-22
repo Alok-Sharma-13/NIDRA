@@ -47,7 +47,7 @@ def check_blocked_ip_first():
     ip = request.remote_addr
     if IPBlocker().is_blocked(ip):
         return "403 Forbidden - IP Blocked by NIDRA", 403
-
+    
 @app.before_request
 def full_traffic_analysis():
     log = sniff_request(request)

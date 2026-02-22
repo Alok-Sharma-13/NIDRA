@@ -46,11 +46,22 @@ def analyze_log():
                 all_alerts.append(full_alert)
 
                 # 🔥 BLOCK ON HIGH OR CRITICAL
+                # if alert.get("severity") in ["high", "critical"]:
+                #     ip = log.get("ip_address")
+                #     if ip:
+                #         ip_blocker.block(ip)
+                #         blocked = True
                 if alert.get("severity") in ["high", "critical"]:
                     ip = log.get("ip_address")
                     if ip:
                         ip_blocker.block(ip)
                         blocked = True
+                        return jsonify({
+                            "success": True,
+                            "alerts": all_alerts,
+                            "blocked": True,
+                            "message": "IP Blocked"
+                        }), 200
 
         return jsonify({
             "success": True,
