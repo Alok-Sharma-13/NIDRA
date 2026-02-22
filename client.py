@@ -1,7 +1,7 @@
 import requests
 import time
 
-BASE_URL = "http://localhost:5000"
+BASE_URL = "http://localhost:8000"
 
 # === Existing Tests ===
 

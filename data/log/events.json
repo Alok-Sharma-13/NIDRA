@@ -3,119 +3,30 @@
     "rule": "XSS Attempt",
     "description": "Signature match for pattern: <script.*?>",
     "severity": "high",
-    "timestamp": "2026-02-01T09:31:14.177953",
+    "timestamp": "2026-02-22T09:40:00.221120",
     "ip_address": "127.0.0.1",
+    "method": "GET",
     "path": "/search?q=<script>alert(1)</script>",
-    "user_agent": "curl/8.1",
-    "headers": {
-      "X-Test": "XSS-Test"
-    }
-  },
-  {
-    "rule": "Suspicious User-Agent",
-    "description": "Signature match for pattern: sqlmap|nmap|curl",
-    "severity": "medium",
-    "timestamp": "2026-02-01T09:31:14.177953",
-    "ip_address": "127.0.0.1",
-    "path": "/search?q=<script>alert(1)</script>",
-    "user_agent": "curl/8.1",
-    "headers": {
-      "X-Test": "XSS-Test"
-    }
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
   },
   {
     "rule": "SQL Injection",
     "description": "Signature match for pattern: (union select|drop table|--)",
     "severity": "high",
-    "timestamp": "2026-02-01T09:31:16.377591",
-    "ip_address": "127.0.0.2",
-    "path": "/products?id=1 union select password from users --",
-    "user_agent": "Mozilla/5.0",
-    "headers": {
-      "X-Test": "SQLi-Test"
-    }
-  },
-  {
-    "rule": "Suspicious User-Agent",
-    "description": "Signature match for pattern: sqlmap|nmap|curl",
-    "severity": "medium",
-    "timestamp": "2026-02-01T09:31:18.494920",
-    "ip_address": "127.0.0.3",
-    "path": "/about",
-    "user_agent": "sqlmap/1.5",
-    "headers": {
-      "X-Test": "UserAgent-Test"
-    }
-  },
-  {
-    "source": "honeypot",
-    "ip": "127.0.0.1",
-    "path": "/api/log/admin",
+    "timestamp": "2026-02-22T09:43:40.004317",
+    "ip_address": "127.0.0.1",
     "method": "GET",
-    "timestamp": "2026-02-01 15:01:20",
-    "rule": "Honeypot Path Accessed: /api/log/admin",
-    "severity": "High"
+    "path": "/search?q=1 union select password from users --",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
   },
   {
-    "rule": "Broken Authentication",
-    "description": "Threshold exceeded: 5 in 120s for username",
+    "rule": "SQL Injection",
+    "description": "Signature match for pattern: (union select|drop table|--)",
     "severity": "high",
-    "timestamp": "2026-02-01T09:31:28.294936",
-    "ip_address": "127.0.0.10",
-    "username": "victim",
-    "event": "login_failure",
-    "path": "/api/login"
-  },
-  {
-    "rule": "Broken Authentication",
-    "description": "Threshold exceeded: 5 in 120s for username",
-    "severity": "high",
-    "timestamp": "2026-02-01T09:31:28.346891",
-    "ip_address": "127.0.0.10",
-    "username": "victim",
-    "event": "login_failure",
-    "path": "/api/login"
-  },
-  {
-    "rule": "Broken Access Control / IDOR",
-    "description": "Signature match for pattern: /user/\\d+|/profile/\\d+|/invoice/\\d+",
-    "severity": "critical",
-    "timestamp": "2026-02-01T09:31:30.563293",
-    "ip_address": "127.0.0.11",
-    "path": "/api/user/12345",
-    "username": "attacker",
-    "headers": {
-      "X-Test": "IDOR-Test"
-    }
-  },
-  {
-    "rule": "Remote Code Execution / Command Injection",
-    "description": "Signature match for pattern: (\\b(cat|ls|whoami|curl|wget|bash|sh)\\b|;|&&|\\|)",
-    "severity": "critical",
-    "timestamp": "2026-02-01T09:31:32.712679",
-    "ip_address": "127.0.0.12",
-    "path": "/api/run",
-    "body": "cat /etc/passwd; ls -la && whoami",
-    "username": "attacker"
-  },
-  {
-    "rule": "File Upload Abuse",
-    "description": "Signature match for pattern: (\\.php$|\\.jsp$|\\.asp$|\\.exe$|\\.sh$|\\.js$|\\.jpg\\.php$|\\.png\\.php$)",
-    "severity": "high",
-    "timestamp": "2026-02-01T09:31:34.835584",
-    "ip_address": "127.0.0.13",
-    "path": "/api/upload",
-    "filename": "image.jpg.php",
-    "username": "attacker"
-  },
-  {
-    "rule": "Insecure Deserialization",
-    "description": "Signature match for pattern: (pickle|object|javaSerialized|Y29tcGxleA==|__reduce__)",
-    "severity": "critical",
-    "timestamp": "2026-02-01T09:31:36.985020",
-    "ip_address": "127.0.0.14",
-    "path": "/api/import",
-    "body": "pickle.loads(b'Y29tcGxleA==')",
-    "username": "attacker"
+    "timestamp": "2026-02-22T09:45:20.814912",
+    "ip_address": "127.0.0.1",
+    "method": "GET",
+    "path": "/search?q=1 union select password from users --",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
   }
 ]

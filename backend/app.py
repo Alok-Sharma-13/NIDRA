@@ -42,6 +42,11 @@ engine = RuleEngine()
 rule_state = {}
 country_blocker = CountryBlocker()   # ✅ ADDED
 
+@app.before_request
+def check_blocked_ip_first():
+    ip = request.remote_addr
+    if IPBlocker().is_blocked(ip):
+        return "403 Forbidden - IP Blocked by NIDRA", 403
 
 @app.before_request
 def full_traffic_analysis():
@@ -73,8 +78,15 @@ def full_traffic_analysis():
     # Rule analysis
     alerts = engine.analyze(log, rule_state)
     if alerts:
+        ip_blocker = IPBlocker()
+
         for alert in alerts:
             log_to_file(alert)
+
+            if alert.get("severity") in ["high", "critical"]:
+                ip_blocker.block(log.get("ip_address"))
+                return "403 Forbidden - Threat Detected", 403
+                
 
 
 @app.teardown_appcontext
