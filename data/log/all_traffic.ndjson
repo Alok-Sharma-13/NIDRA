@@ -10,3 +10,9 @@
 {"timestamp": "2026-03-15T06:32:40.854018", "ip_address": "1.1.1.1", "country": "Invalid IP", "method": "POST", "path": "/home?", "user_agent": "python-requests/2.32.3"}
 {"timestamp": "2026-03-15T06:32:58.170890", "ip_address": "8.8.4.4", "country": "Invalid IP", "method": "POST", "path": "/home?", "user_agent": "python-requests/2.32.3"}
 {"timestamp": "2026-03-15T06:33:52.182344", "ip_address": "127.0.0.1", "country": "Invalid IP", "method": "POST", "path": "/home?", "user_agent": "python-requests/2.32.3"}
+{"timestamp": "2026-03-15T10:03:20.738858", "ip_address": "127.0.0.1", "country": "Unknown", "method": "POST", "path": "/api/rules", "user_agent": "curl/8.18.0"}
+{"timestamp": "2026-03-15T10:04:15.211191", "ip_address": "127.0.0.1", "country": "Invalid IP", "method": "POST", "path": "/api/rules", "user_agent": "curl/8.18.0"}
+{"timestamp": "2026-03-15T10:08:11.321216", "ip_address": "127.0.0.1", "country": "Unknown", "method": "POST", "path": "/api/rules/update", "user_agent": "curl/8.18.0"}
+{"timestamp": "2026-03-15T10:08:30.619629", "ip_address": "127.0.0.1", "country": "Invalid IP", "method": "POST", "path": "/api/rules/update", "user_agent": "curl/8.18.0"}
+{"timestamp": "2026-03-15T10:12:08.551380", "ip_address": "127.0.0.1", "country": "Invalid IP", "method": "POST", "path": "/api/rules/update", "user_agent": "curl/8.18.0"}
+{"timestamp": "2026-03-15T10:12:37.373003", "ip_address": "127.0.0.1", "country": "Invalid IP", "method": "POST", "path": "/api/rules/update", "user_agent": "curl/8.18.0"}

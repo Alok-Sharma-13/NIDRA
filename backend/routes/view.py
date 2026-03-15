@@ -16,7 +16,7 @@ LOG_DIR = os.path.join(BASE_DIR, "data", "log")
 EVENTS_FILE = os.path.join(LOG_DIR, "events.json")
 TRAFFIC_FILE = os.path.join(LOG_DIR, "all_traffic.ndjson")
 BLOCKED_IPS_FILE = os.path.join(LOG_DIR, "blocked_ips.txt")
-
+RULES_FILE = os.path.join(BASE_DIR, "data", "rules.json")
 
 @viewer_bp.route("/api/events", methods=["GET"])
 def get_events():
@@ -74,3 +74,29 @@ def get_blocked_ips():
         "success": True,
         "data": ips
     })
+
+
+@viewer_bp.route("/api/rules/update", methods=["POST"])
+def update_rule():
+
+    data = request.get_json()
+    rule_name = data.get("rule")
+    enabled = data.get("enabled")
+
+    try:
+        # read existing rules
+        with open(RULES_FILE, "r", encoding="utf-8") as f:
+            rules = json.load(f)
+
+        # update only the specific rule
+        if rule_name in rules["enabled_rules"]:
+            rules["enabled_rules"][rule_name] = enabled
+
+        # write back to file
+        with open(RULES_FILE, "w", encoding="utf-8") as f:
+            json.dump(rules, f, indent=2)
+
+        return jsonify({"success": True, "message": "Rule updated"})
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
