@@ -208,5 +208,29 @@
     "method": "POST",
     "path": "/api/rules/update",
     "user_agent": "curl/8.18.0"
+  },
+  {
+    "rule": "Suspicious User-Agent",
+    "description": "Signature match for pattern: sqlmap|nmap|curl",
+    "severity": "medium",
+    "timestamp": "2026-03-15T16:47:01.914091",
+    "ip_address": "127.0.0.1",
+    "method": "GET",
+    "path": "/home?",
+    "user_agent": "curl/8.18.0",
+    "body": {},
+    "files": []
+  },
+  {
+    "rule": "Suspicious User-Agent",
+    "description": "Signature match for pattern: sqlmap|nmap|curl",
+    "severity": "medium",
+    "timestamp": "2026-03-15T16:48:14.132187",
+    "ip_address": "127.0.0.1",
+    "method": "GET",
+    "path": "/home?",
+    "user_agent": "curl/8.18.0",
+    "body": {},
+    "files": []
   }
 ]

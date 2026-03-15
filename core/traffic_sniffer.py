@@ -2,7 +2,7 @@
 Traffic Sniffer for NIDRA
 Captures incoming request metadata for logging and threat analysis.
 
-Author: Alok 
+Author: Alok
 Date: June 2025
 """
 
@@ -32,6 +32,11 @@ def sniff_request(request):
         if path.startswith(EXCLUDED_PREFIXES):
             return None
 
+        # 🔴 Ignore Render health checks
+        user_agent = request.headers.get("User-Agent", "")
+        if "Go-http-client" in user_agent:
+            return None
+
         # 🔹 Detect real client IP behind proxies
         forwarded = request.headers.get("X-Forwarded-For")
 
@@ -50,7 +55,8 @@ def sniff_request(request):
 
                     client_path = client_data.get("path")
                     if client_path:
-                        path = client_path
+                        # Normalize path (remove trailing '?')
+                        path = client_path.rstrip("?")
 
                     client_ip = client_data.get("ip_address")
                     if client_ip:
@@ -67,7 +73,7 @@ def sniff_request(request):
             "country": country,
             "method": request.method,
             "path": path,
-            "user_agent": request.headers.get("User-Agent", "Unknown"),
+            "user_agent": user_agent or "Unknown",
         }
 
         return log_data
