@@ -16,7 +16,7 @@ EXCLUDED_PREFIXES = (
     "/api/traffic",
     "/api/events",
     "/api/blocked-ips",
-    "/api/rules",
+    # "/api/rules",
 )
 
 
