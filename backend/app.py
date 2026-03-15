@@ -118,8 +118,11 @@ def full_traffic_analysis():
     if alerts:
         for alert in alerts:
 
+            # Always log event first
             log_to_file(alert)
 
+        # Then enforce blocking
+        for alert in alerts:
             if alert.get("severity") in ["high", "critical"]:
                 ip_blocker.block(ip)
                 return "403 Forbidden - Threat Detected", 403
