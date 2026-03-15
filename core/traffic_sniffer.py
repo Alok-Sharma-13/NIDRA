@@ -11,12 +11,11 @@ from core.geoip_lookup import GeoIPService
 
 geoIP = GeoIPService()
 
-# APIs we do NOT want to log
-EXCLUDED_PREFIXES = (
+# Dashboard APIs (must NEVER be blocked)
+DASHBOARD_APIS = (
     "/api/traffic",
     "/api/events",
-    "/api/blocked-ips",
-    # "/api/rules",
+    "/api/blocked-ips"
 )
 
 
@@ -28,8 +27,8 @@ def sniff_request(request):
     try:
         path = request.path if hasattr(request, "path") else str(request.url.path)
 
-        # 🔴 Skip internal NIDRA APIs
-        if path.startswith(EXCLUDED_PREFIXES):
+        # 🔴 Always allow dashboard APIs
+        if path.startswith(DASHBOARD_APIS):
             return None
 
         # 🔴 Ignore Render health checks
@@ -45,7 +44,7 @@ def sniff_request(request):
         else:
             ip_address = request.remote_addr
 
-        # 🔹 If request comes from SDK analyze endpoint, extract client data
+        # 🔹 Extract real request data from SDK payload
         if path == "/api/rules/analyze":
             try:
                 data = request.get_json()
@@ -55,7 +54,6 @@ def sniff_request(request):
 
                     client_path = client_data.get("path")
                     if client_path:
-                        # Normalize path (remove trailing '?')
                         path = client_path.rstrip("?")
 
                     client_ip = client_data.get("ip_address")
