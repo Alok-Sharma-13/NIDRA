@@ -31,11 +31,43 @@ def sniff_request(request):
         if path in EXCLUDED_PATHS:
             return None
 
-        ip_address = (
-            request.headers.get("X-Forwarded-For")
-            or request.remote_addr
-            or request.client.host  # For FastAPI
-        )
+        # 🔹 If request comes from SDK analyze endpoint, extract the real client path
+        # if path == "/api/rules/analyze":
+        #     try:
+        #         data = request.get_json()
+        #         if isinstance(data, list) and len(data) > 0:
+        #             client_path = data[0].get("path")
+        #             if client_path:
+        #                 path = client_path
+        #     except Exception:
+        #         pass
+
+        # ip_address = (
+        #     request.headers.get("X-Forwarded-For")
+        #     or request.remote_addr
+        #     or request.client.host  # For FastAPI
+        # )
+
+        ip_address = request.remote_addr  # default
+
+        # 🔹 If request comes from SDK analyze endpoint, extract client data
+        if path == "/api/rules/analyze":
+            try:
+                data = request.get_json()
+
+                if isinstance(data, list) and len(data) > 0:
+                    client_data = data[0]
+
+                    client_path = client_data.get("path")
+                    if client_path:
+                        path = client_path
+
+                    client_ip = client_data.get("ip_address")
+                    if client_ip:
+                        ip_address = client_ip
+
+            except Exception:
+                pass
 
         country = geoIP.lookup_country(ip_address)
 
@@ -45,7 +77,7 @@ def sniff_request(request):
             "country": country,
             "method": request.method,
             "path": path,
-            "headers": dict(request.headers),
+            # "headers": dict(request.headers),
             "user_agent": request.headers.get("User-Agent", "Unknown"),
         }
 

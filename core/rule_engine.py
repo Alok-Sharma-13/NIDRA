@@ -40,7 +40,7 @@ class SignatureRule(Rule):
 
     def evaluate(self, log: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         data = log.get(self.target, "")
-        if isinstance(data, dict):
+        if isinstance(data, (dict,list)):
             data = str(data)
         if self.pattern.search(data):
             return {
@@ -156,7 +156,7 @@ class RuleEngine:
 
         if enabled_rules.get("File Upload Abuse", False):
             self.signature_rules.append(
-                SignatureRule("File Upload Abuse", r"(\.php$|\.jsp$|\.asp$|\.exe$|\.sh$|\.js$|\.jpg\.php$|\.png\.php$)", target="filename", severity="high")
+                SignatureRule("File Upload Abuse", r"\.(php|jsp|asp|exe|sh|js)", target="files", severity="high")
             )
 
         if enabled_rules.get("Insecure Deserialization", False):
@@ -175,7 +175,15 @@ class RuleEngine:
 
         Returns:
             List of matched alerts.
-        """
+ 
+       """
+        # Reload rules dynamically
+        self.signature_rules.clear()
+        self.threshold_rules.clear()
+        self._load_default_rules()
+ 
+        if "body" in log and isinstance(log["body"], dict):
+            log.update(log["body"])
         alerts = []
 
         for rule in self.signature_rules:
