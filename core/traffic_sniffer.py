@@ -12,11 +12,12 @@ from core.geoip_lookup import GeoIPService
 geoIP = GeoIPService()
 
 # APIs we do NOT want to log
-EXCLUDED_PATHS = {
+EXCLUDED_PREFIXES = (
     "/api/traffic",
     "/api/events",
-    "/api/blocked-ips"
-}
+    "/api/blocked-ips",
+    "/api/rules",
+)
 
 
 def sniff_request(request):
@@ -27,28 +28,17 @@ def sniff_request(request):
     try:
         path = request.path if hasattr(request, "path") else str(request.url.path)
 
-        # 🔴 SKIP internal viewer APIs
-        if path in EXCLUDED_PATHS:
+        # 🔴 Skip internal NIDRA APIs
+        if path.startswith(EXCLUDED_PREFIXES):
             return None
 
-        # 🔹 If request comes from SDK analyze endpoint, extract the real client path
-        # if path == "/api/rules/analyze":
-        #     try:
-        #         data = request.get_json()
-        #         if isinstance(data, list) and len(data) > 0:
-        #             client_path = data[0].get("path")
-        #             if client_path:
-        #                 path = client_path
-        #     except Exception:
-        #         pass
+        # 🔹 Detect real client IP behind proxies
+        forwarded = request.headers.get("X-Forwarded-For")
 
-        # ip_address = (
-        #     request.headers.get("X-Forwarded-For")
-        #     or request.remote_addr
-        #     or request.client.host  # For FastAPI
-        # )
-
-        ip_address = request.remote_addr  # default
+        if forwarded:
+            ip_address = forwarded.split(",")[0].strip()
+        else:
+            ip_address = request.remote_addr
 
         # 🔹 If request comes from SDK analyze endpoint, extract client data
         if path == "/api/rules/analyze":
@@ -77,7 +67,6 @@ def sniff_request(request):
             "country": country,
             "method": request.method,
             "path": path,
-            # "headers": dict(request.headers),
             "user_agent": request.headers.get("User-Agent", "Unknown"),
         }
 
