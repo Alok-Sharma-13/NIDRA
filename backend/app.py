@@ -25,9 +25,21 @@ from backend.routes.rule_routes import rules_bp
 import json
 
 
+# ===============================
+# Helper function for real IP
+# ===============================
+def get_real_ip(req):
+    forwarded = req.headers.get("X-Forwarded-For")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return req.remote_addr
+
+
 app = Flask(__name__)
 
-# ---------------- CORS ---------------- #
+# ===============================
+# CORS
+# ===============================
 CORS(
     app,
     resources={
@@ -39,29 +51,37 @@ CORS(
     }
 )
 
-# ---------------- Rate Limiter ---------------- #
+# ===============================
+# Rate Limiter
+# ===============================
 limiter = Limiter(get_remote_address)
 limiter.init_app(app)
 
-# ---------------- Honeypots ---------------- #
+# ===============================
+# Honeypots
+# ===============================
 register_all_honeypots(app)
 
-# ---------------- Engines ---------------- #
+# ===============================
+# Engines
+# ===============================
 engine = RuleEngine()
 rule_state = {}
 
-# ---------------- Security Controllers ---------------- #
-ip_blocker = IPBlocker()          # SINGLE GLOBAL INSTANCE
+# ===============================
+# Security Controllers
+# ===============================
+ip_blocker = IPBlocker()
 country_blocker = CountryBlocker()
 
 
 # =====================================================
-# 1️⃣ FIRST MIDDLEWARE — BLOCKED IP CHECK
+# 1️⃣ BLOCKED IP CHECK
 # =====================================================
 @app.before_request
 def check_blocked_ip_first():
 
-    ip = request.headers.get("X-Forwarded-For", request.remote_addr)
+    ip = get_real_ip(request)
 
     DASHBOARD_APIS = (
         "/api/traffic",
@@ -69,32 +89,29 @@ def check_blocked_ip_first():
         "/api/blocked-ips"
     )
 
-    # Block attacker but allow dashboard access
     if ip_blocker.is_blocked(ip) and not request.path.startswith(DASHBOARD_APIS):
         return jsonify({"error": "403 Forbidden - IP Blocked"}), 403
 
 
 # =====================================================
-# 2️⃣ SECOND MIDDLEWARE — TRAFFIC ANALYSIS
+# 2️⃣ TRAFFIC ANALYSIS
 # =====================================================
 @app.before_request
 def full_traffic_analysis():
 
     log = sniff_request(request)
 
-    # Skip excluded endpoints
     if log is None:
         return
 
-    ip = log.get("ip_address")
+    ip = get_real_ip(request)
 
-    # ---------------- COUNTRY BLOCK ---------------- #
+    # ---------------- COUNTRY BLOCK ----------------
     if ip and not country_blocker.is_ip_allowed(ip):
         ip_blocker.block(ip)
         return "403 Forbidden - Country Blocked", 403
-    # ------------------------------------------------ #
 
-    # ---------------- TRAFFIC LOGGING ---------------- #
+    # ---------------- TRAFFIC LOGGING ----------------
     try:
         os.makedirs("data/log", exist_ok=True)
 
@@ -103,30 +120,30 @@ def full_traffic_analysis():
 
     except Exception as e:
         print(f"[Logger] Failed to log all traffic: {e}")
-    # ------------------------------------------------ #
 
-    # ---------------- HONEYPOT CHECK ---------------- #
+    # ---------------- HONEYPOT CHECK ----------------
     visible_paths = [hp["path"] for hp in honeypot_manager.get_visible_honeypots()]
 
     if request.path in visible_paths:
         return honeypot_manager.handle_trigger(request.path)
-    # ------------------------------------------------ #
 
-    # ---------------- RULE ENGINE ---------------- #
+    # ---------------- RULE ENGINE ----------------
     alerts = engine.analyze(log, rule_state)
 
     if alerts:
-        for alert in alerts:
 
-            # Always log event first
+        # Always log events first
+        for alert in alerts:
             log_to_file(alert)
 
-        # Then enforce blocking
+        # Then block attacker if severity high
         for alert in alerts:
             if alert.get("severity") in ["high", "critical"]:
-                ip_blocker.block(ip)
+
+                attacker_ip = get_real_ip(request)
+                ip_blocker.block(attacker_ip)
+
                 return "403 Forbidden - Threat Detected", 403
-    # ------------------------------------------------ #
 
 
 # =====================================================
