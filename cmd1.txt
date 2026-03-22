@@ -89,6 +89,10 @@ curl http://localhost:8000/api/blocked-ips/db
 
 curl http://localhost:8000/api/events/db/ip/1.2.3.4
 
+
+# Rule update 
+curl -X POST https://nidra.onrender.com/api/rules/update -H "Content-Type: application/json" -d "{\"rule\":\"SQL Injection\",\"enabled\":true}"
+
 ############################################
 # END
 ############################################
