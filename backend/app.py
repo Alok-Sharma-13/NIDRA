@@ -148,20 +148,25 @@ def full_traffic_analysis():
 
     if alerts:
 
+        should_block = False
+
         for alert in alerts:
             log_to_file(alert)
 
-        for alert in alerts:
             if alert.get("severity") in ["high", "critical"]:
+                should_block = True
 
-                attacker_ip = log.get("ip_address")
-                ip_blocker.block(attacker_ip)
+        # 🔥 block AFTER logging but BEFORE return
+        if should_block:
+            attacker_ip = log.get("ip_address")
 
-                return jsonify({
-                    "error": "Blocked by NIDRA",
-                    "rule": alert.get("rule"),
-                    "severity": alert.get("severity")
-                }), 403
+            # ALWAYS block (even if duplicate)
+            ip_blocker.block(attacker_ip)
+
+            return jsonify({
+                "error": "Blocked by NIDRA",
+                "severity": "critical"
+            }), 403
 
 
 # =====================================================

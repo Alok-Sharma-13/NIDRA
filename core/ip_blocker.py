@@ -40,23 +40,17 @@ class IPBlocker:
     #         self._save_blocked_ips()
     #         print(f"[IPBlocker] Blocked IP: {ip}")
     def block(self, ip: str):
-        """Blocks the given IP and saves it."""
+        print(f"[IPBlocker] Blocking IP: {ip}")
 
-        if ip and ip not in self.blocked_ips:
-            self.blocked_ips.add(ip)
-            self._save_blocked_ips()
-            print(f"[IPBlocker] Blocked IP: {ip}")
-
-            # -------- DB INSERT --------
-            try:
-                with engine.begin() as conn:
-                    conn.execute(text("""
-                        INSERT INTO blocked_ips (ip_address)
-                        VALUES (:ip)
-                        ON CONFLICT (ip_address) DO NOTHING
-                    """), {"ip": ip})
-            except Exception as e:
-                print("[IPBlocker] DB insert failed:", e)
+        try:
+            with engine.begin() as conn:
+                conn.execute(text("""
+                    INSERT INTO blocked_ips (ip_address)
+                    VALUES (:ip)
+                    ON CONFLICT (ip_address) DO NOTHING
+                """), {"ip": ip})
+        except Exception as e:
+            print("[IPBlocker] DB insert failed:", e)
 
     # def unblock(self, ip: str):
     #     """Unblocks the given IP and updates the file."""
