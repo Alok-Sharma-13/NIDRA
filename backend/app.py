@@ -144,7 +144,7 @@ def full_traffic_analysis():
         return honeypot_manager.handle_trigger(request.path)
 
     # ---------------- RULE ENGINE ----------------
-    alerts = rule_engine.analyze(log, rule_state)
+    alerts = rule_engine.analyze(log, {})
 
     if alerts:
 
@@ -154,9 +154,7 @@ def full_traffic_analysis():
         for alert in alerts:
             if alert.get("severity") in ["high", "critical"]:
 
-                # 🔥 block SAME ip used in log
                 attacker_ip = log.get("ip_address")
-
                 ip_blocker.block(attacker_ip)
 
                 return jsonify({
