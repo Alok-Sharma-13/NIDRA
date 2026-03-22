@@ -7,6 +7,8 @@ Date: July 2025
 """
 
 import os
+from backend.database_config import engine
+from sqlalchemy import text
 
 BLOCKED_IPS_FILE = "data/log/blocked_ips.txt"
 
@@ -31,19 +33,50 @@ class IPBlocker:
             for ip in sorted(self.blocked_ips):
                 f.write(ip + "\n")
 
+    # def block(self, ip: str):
+    #     """Blocks the given IP and saves it."""
+    #     if ip and ip not in self.blocked_ips:
+    #         self.blocked_ips.add(ip)
+    #         self._save_blocked_ips()
+    #         print(f"[IPBlocker] Blocked IP: {ip}")
     def block(self, ip: str):
         """Blocks the given IP and saves it."""
+
         if ip and ip not in self.blocked_ips:
             self.blocked_ips.add(ip)
             self._save_blocked_ips()
             print(f"[IPBlocker] Blocked IP: {ip}")
 
+            # -------- DB INSERT --------
+            try:
+                with engine.begin() as conn:
+                    conn.execute(text("""
+                        INSERT INTO blocked_ips (ip_address)
+                        VALUES (:ip)
+                        ON CONFLICT (ip_address) DO NOTHING
+                    """), {"ip": ip})
+            except Exception as e:
+                print("[IPBlocker] DB insert failed:", e)
+
+    # def unblock(self, ip: str):
+    #     """Unblocks the given IP and updates the file."""
+    #     if ip in self.blocked_ips:
+    #         self.blocked_ips.remove(ip)
+    #         self._save_blocked_ips()
+    #         print(f"[IPBlocker] Unblocked IP: {ip}")
+
     def unblock(self, ip: str):
         """Unblocks the given IP and updates the file."""
+
+        # reload latest file first
+        self._load_blocked_ips()
+
         if ip in self.blocked_ips:
             self.blocked_ips.remove(ip)
             self._save_blocked_ips()
             print(f"[IPBlocker] Unblocked IP: {ip}")
+        else:
+            print(f"[IPBlocker] IP not found: {ip}")
 
     def is_blocked(self, ip: str) -> bool:
         """Checks whether the given IP is blocked."""

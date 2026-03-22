@@ -21,6 +21,8 @@ from core.ip_blocker import IPBlocker
 from core.country_blocker import CountryBlocker
 
 from backend.routes.rule_routes import rules_bp
+from backend.database_config import engine
+from sqlalchemy import text
 
 import json
 
@@ -65,7 +67,7 @@ register_all_honeypots(app)
 # ===============================
 # Engines
 # ===============================
-engine = RuleEngine()
+rule_engine = RuleEngine()
 rule_state = {}
 
 # ===============================
@@ -78,20 +80,41 @@ country_blocker = CountryBlocker()
 # =====================================================
 # 1️⃣ BLOCKED IP CHECK
 # =====================================================
+# @app.before_request
+# def check_blocked_ip_first():
+
+#     ip = get_real_ip(request)
+
+#     DASHBOARD_APIS = (
+#         "/api/traffic",
+#         "/api/events",
+#         "/api/blocked-ips"
+#     )
+
+#     if ip_blocker.is_blocked(ip) and not request.path.startswith(DASHBOARD_APIS):
+#         return jsonify({"error": "403 Forbidden - IP Blocked"}), 403
+
+
 @app.before_request
 def check_blocked_ip_first():
 
+    # reload blocked IPs dynamically
+    ip_blocker._load_blocked_ips()
+
     ip = get_real_ip(request)
 
-    DASHBOARD_APIS = (
+    # dashboard should still be accessible
+    ALLOWED_WHEN_BLOCKED = (
         "/api/traffic",
         "/api/events",
         "/api/blocked-ips"
     )
 
-    if ip_blocker.is_blocked(ip) and not request.path.startswith(DASHBOARD_APIS):
-        return jsonify({"error": "403 Forbidden - IP Blocked"}), 403
-
+    if ip_blocker.is_blocked(ip):
+        if not request.path.startswith(ALLOWED_WHEN_BLOCKED):
+            return jsonify({
+                "error": "403 Forbidden - IP Blocked by NIDRA"
+            }), 403
 
 # =====================================================
 # 2️⃣ TRAFFIC ANALYSIS
@@ -112,11 +135,32 @@ def full_traffic_analysis():
         return "403 Forbidden - Country Blocked", 403
 
     # ---------------- TRAFFIC LOGGING ----------------
+    # try:
+    #     os.makedirs("data/log", exist_ok=True)
+
+    #     with open("data/log/all_traffic.ndjson", "a") as f:
+    #         # f.write(json.dumps(log) + "\n")
     try:
         os.makedirs("data/log", exist_ok=True)
 
         with open("data/log/all_traffic.ndjson", "a") as f:
             f.write(json.dumps(log) + "\n")
+
+        # -------- DB INSERT --------
+        with engine.begin() as conn:
+            conn.execute(text("""
+                INSERT INTO traffic_logs
+                (timestamp, ip_address, country, method, path, user_agent)
+                VALUES
+                (:timestamp, :ip, :country, :method, :path, :ua)
+            """), {
+                "timestamp": log.get("timestamp"),
+                "ip": log.get("ip_address"),
+                "country": log.get("country"),
+                "method": log.get("method"),
+                "path": log.get("path"),
+                "ua": log.get("user_agent")
+            })
 
     except Exception as e:
         print(f"[Logger] Failed to log all traffic: {e}")
@@ -128,23 +172,44 @@ def full_traffic_analysis():
         return honeypot_manager.handle_trigger(request.path)
 
     # ---------------- RULE ENGINE ----------------
-    alerts = engine.analyze(log, rule_state)
+    # alerts = rule_engine.analyze(log, rule_state)
+
+    # if alerts:
+
+    #     # Always log events first
+    #     for alert in alerts:
+    #         log_to_file(alert)
+
+    #     # Then block attacker if severity high
+    #     for alert in alerts:
+    #         if alert.get("severity") in ["high", "critical"]:
+
+    #             attacker_ip = get_real_ip(request)
+    #             ip_blocker.block(attacker_ip)
+
+    #             return "403 Forbidden - Threat Detected", 403
+
+    alerts = rule_engine.analyze(log, rule_state)
 
     if alerts:
 
-        # Always log events first
+        # log events first
         for alert in alerts:
             log_to_file(alert)
 
-        # Then block attacker if severity high
+        # enforce blocking
         for alert in alerts:
             if alert.get("severity") in ["high", "critical"]:
 
                 attacker_ip = get_real_ip(request)
+
                 ip_blocker.block(attacker_ip)
 
-                return "403 Forbidden - Threat Detected", 403
-
+                return jsonify({
+                    "error": "Blocked by NIDRA",
+                    "rule": alert.get("rule"),
+                    "severity": alert.get("severity")
+                }), 403
 
 # =====================================================
 # CLOSE GEOIP DATABASE

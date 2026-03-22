@@ -1,33 +1,94 @@
-curl -X GET http://localhost:8000/api/log/admin -H "User-Agent: MaliciousScanner/1.0" -H "X-Forwarded-For: 203.0.113.5" -v
+############################################
+# NIDRA FULL CURL TEST (GROUPED)
+############################################
 
 
-1️⃣ Traffic logs (all_traffic.ndjson → /api/traffic)
-🔹 Get latest 50 traffic logs
+############################
+# TRAFFIC APIs
+############################
+
+# Trigger traffic
+curl http://localhost:5000/home
+
+# Traffic (FILE)
+curl http://localhost:8000/api/traffic
+
+# Traffic (DB)
+curl http://localhost:8000/api/traffic/db
+
+# Traffic pagination
+curl "http://localhost:8000/api/traffic/db?start=0&limit=5"
 
 
-curl "http://localhost:5000/api/traffic?start=0&limit=50"
+
+############################
+# EVENTS APIs
+############################
+
+# Events (FILE)
+curl http://localhost:8000/api/events
+
+# Events (DB)
+curl http://localhost:8000/api/events/db
 
 
-🔹 Get older traffic logs (scroll down)
 
-curl "http://localhost:5000/api/traffic?start=50&limit=50"
+############################
+# BLOCKED IP APIs
+############################
 
+# Blocked IPs (FILE)
+curl http://localhost:8000/api/blocked-ips
 
-2️⃣ Security events / alerts (events.json → /api/events)
-🔹 Get latest 20 alerts
-
-curl "http://localhost:5000/api/events?start=0&limit=20"
-
-
-🔹 Get older alerts (scroll down)
-
-curl "http://localhost:5000/api/events?start=20&limit=20"
+# Blocked IPs (DB)
+curl http://localhost:8000/api/blocked-ips/db
 
 
-3️⃣ Blocked IPs (blocked_ips.txt → /api/blocked-ips)
-🔹 Get all blocked IPs
 
-curl "http://localhost:5000/api/blocked-ips"
+############################
+# ATTACK TESTS
+############################
+
+# XSS Attack
+curl "http://localhost:5000/search?q=<script>alert(1)</script>"
+
+# SQL Injection Attack
+curl "http://localhost:5000/search?q=1 union select password from users --"
+
+# Command Injection
+curl -X POST http://localhost:5000/run -d "command=cat /etc/passwd"
+
+# Suspicious User-Agent
+curl -A "sqlmap" http://localhost:5000/home
 
 
-(No paging needed here)
+
+############################
+# VERIFY AFTER ATTACK
+############################
+
+# Check Events
+curl http://localhost:8000/api/events/db
+
+# Check Blocked IPs
+curl http://localhost:8000/api/blocked-ips/db
+
+
+
+############################
+# UNBLOCK LOCALHOST
+############################
+
+curl -X DELETE http://localhost:8000/api/blocked-ips/db/127.0.0.1
+
+# Verify unblock
+curl http://localhost:8000/api/blocked-ips/db
+
+
+#to get all info for a particular blocked ip
+
+curl http://localhost:8000/api/events/db/ip/1.2.3.4
+
+############################################
+# END
+############################################

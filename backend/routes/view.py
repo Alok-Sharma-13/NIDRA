@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 import json
 import os
+from backend.database_config import engine
+from sqlalchemy import text
 
 viewer_bp = Blueprint("viewer", __name__)
 
@@ -34,6 +36,32 @@ def get_events():
         "data": events[start:start + limit]
     })
 
+#same api above and below or events
+
+@viewer_bp.route("/api/events/db", methods=["GET"])
+def get_events_db():
+
+    start = int(request.args.get("start", 0))
+    limit = int(request.args.get("limit", 20))
+
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(text("""
+                SELECT *
+                FROM events
+                ORDER BY timestamp DESC
+                LIMIT :limit OFFSET :start
+            """), {"limit": limit, "start": start})
+
+            rows = [dict(row._mapping) for row in result]
+
+        return jsonify({
+            "success": True,
+            "data": rows
+        })
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 @viewer_bp.route("/api/traffic", methods=["GET"])
 def get_traffic():
@@ -61,19 +89,44 @@ def get_traffic():
         "data": logs[start:start + limit]
     })
 
+#the below and up api are same but above one is for json and below one is for db 
+@viewer_bp.route("/api/traffic/db", methods=["GET"])
+def get_traffic_db():
 
-@viewer_bp.route("/api/blocked-ips", methods=["GET"])
-def get_blocked_ips():
+    start = int(request.args.get("start", 0))
+    limit = int(request.args.get("limit", 50))
+
     try:
-        with open(BLOCKED_IPS_FILE, "r", encoding="utf-8") as f:
-            ips = [line.strip() for line in f if line.strip()]
-    except FileNotFoundError:
-        ips = []
+        with engine.connect() as conn:
+            result = conn.execute(text("""
+                SELECT *
+                FROM traffic_logs
+                ORDER BY timestamp DESC
+                LIMIT :limit OFFSET :start
+            """), {"limit": limit, "start": start})
 
-    return jsonify({
-        "success": True,
-        "data": ips
-    })
+            rows = [dict(row._mapping) for row in result]
+
+        return jsonify({
+            "success": True,
+            "data": rows
+        })
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+# @viewer_bp.route("/api/blocked-ips", methods=["GET"])
+# def get_blocked_ips():
+#     try:
+#         with open(BLOCKED_IPS_FILE, "r", encoding="utf-8") as f:
+#             ips = [line.strip() for line in f if line.strip()]
+#     except FileNotFoundError:
+#         ips = []
+
+#     return jsonify({
+#         "success": True,
+#         "data": ips
+#     })
 
 
 @viewer_bp.route("/api/rules/update", methods=["POST"])
@@ -100,3 +153,38 @@ def update_rule():
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+    
+
+@viewer_bp.route("/api/events/db/ip/<ip>", methods=["GET"])
+def get_events_by_ip(ip):
+
+    start = int(request.args.get("start", 0))
+    limit = int(request.args.get("limit", 50))
+
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(text("""
+                SELECT *
+                FROM events
+                WHERE ip_address = :ip
+                ORDER BY timestamp DESC
+                LIMIT :limit OFFSET :start
+            """), {
+                "ip": ip,
+                "limit": limit,
+                "start": start
+            })
+
+            rows = [dict(row._mapping) for row in result]
+
+        return jsonify({
+            "success": True,
+            "ip": ip,
+            "data": rows
+        })
+
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
