@@ -98,12 +98,8 @@ country_blocker = CountryBlocker()
 @app.before_request
 def check_blocked_ip_first():
 
-    # reload blocked IPs dynamically
-    ip_blocker._load_blocked_ips()
-
     ip = get_real_ip(request)
 
-    # dashboard should still be accessible
     ALLOWED_WHEN_BLOCKED = (
         "/api/traffic",
         "/api/events",
@@ -127,7 +123,9 @@ def full_traffic_analysis():
     if log is None:
         return
 
+    # ALWAYS use same IP source
     ip = get_real_ip(request)
+    log["ip_address"] = ip   # 🔥 important fix
 
     # ---------------- COUNTRY BLOCK ----------------
     if ip and not country_blocker.is_ip_allowed(ip):
@@ -135,11 +133,6 @@ def full_traffic_analysis():
         return "403 Forbidden - Country Blocked", 403
 
     # ---------------- TRAFFIC LOGGING ----------------
-    # try:
-    #     os.makedirs("data/log", exist_ok=True)
-
-    #     with open("data/log/all_traffic.ndjson", "a") as f:
-    #         # f.write(json.dumps(log) + "\n")
     try:
         os.makedirs("data/log", exist_ok=True)
 
@@ -155,7 +148,7 @@ def full_traffic_analysis():
                 (:timestamp, :ip, :country, :method, :path, :ua)
             """), {
                 "timestamp": log.get("timestamp"),
-                "ip": log.get("ip_address"),
+                "ip": ip,   # 🔥 use same ip
                 "country": log.get("country"),
                 "method": log.get("method"),
                 "path": log.get("path"),

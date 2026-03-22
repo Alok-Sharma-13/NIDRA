@@ -78,9 +78,14 @@ class IPBlocker:
         else:
             print(f"[IPBlocker] IP not found: {ip}")
 
-    def is_blocked(self, ip: str) -> bool:
-        """Checks whether the given IP is blocked."""
-        return ip in self.blocked_ips
+    def is_blocked(self, ip):
+        with engine.connect() as conn:
+            result = conn.execute(text("""
+                SELECT 1 FROM blocked_ips
+                WHERE ip_address = :ip
+            """), {"ip": ip}).fetchone()
+
+        return result is not None
 
     def get_blocked_ips(self):
         """Returns a list of currently blocked IPs."""
