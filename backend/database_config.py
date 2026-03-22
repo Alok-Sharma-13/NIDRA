@@ -13,6 +13,7 @@ from sqlalchemy.orm import sessionmaker
 
 db = None
 SessionLocal = None
+engine = None   # <-- ADD THIS
 
 # MongoDB Connection 
 if DB_TYPE == "mongodb":
