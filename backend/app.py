@@ -64,15 +64,9 @@ limiter.init_app(app)
 # ===============================
 register_all_honeypots(app)
 
-# ===============================
-# Engines
-# ===============================
 rule_engine = RuleEngine()
 rule_state = {}
 
-# ===============================
-# Security Controllers
-# ===============================
 ip_blocker = IPBlocker()
 country_blocker = CountryBlocker()
 
@@ -80,21 +74,6 @@ country_blocker = CountryBlocker()
 # =====================================================
 # 1️⃣ BLOCKED IP CHECK
 # =====================================================
-# @app.before_request
-# def check_blocked_ip_first():
-
-#     ip = get_real_ip(request)
-
-#     DASHBOARD_APIS = (
-#         "/api/traffic",
-#         "/api/events",
-#         "/api/blocked-ips"
-#     )
-
-#     if ip_blocker.is_blocked(ip) and not request.path.startswith(DASHBOARD_APIS):
-#         return jsonify({"error": "403 Forbidden - IP Blocked"}), 403
-
-
 @app.before_request
 def check_blocked_ip_first():
 
@@ -112,6 +91,7 @@ def check_blocked_ip_first():
                 "error": "403 Forbidden - IP Blocked by NIDRA"
             }), 403
 
+
 # =====================================================
 # 2️⃣ TRAFFIC ANALYSIS
 # =====================================================
@@ -123,9 +103,9 @@ def full_traffic_analysis():
     if log is None:
         return
 
-    # ALWAYS use same IP source
+    # 🔥 single IP source
     ip = get_real_ip(request)
-    log["ip_address"] = ip   # 🔥 important fix
+    log["ip_address"] = ip
 
     # ---------------- COUNTRY BLOCK ----------------
     if ip and not country_blocker.is_ip_allowed(ip):
@@ -139,7 +119,6 @@ def full_traffic_analysis():
         with open("data/log/all_traffic.ndjson", "a") as f:
             f.write(json.dumps(log) + "\n")
 
-        # -------- DB INSERT --------
         with engine.begin() as conn:
             conn.execute(text("""
                 INSERT INTO traffic_logs
@@ -148,7 +127,7 @@ def full_traffic_analysis():
                 (:timestamp, :ip, :country, :method, :path, :ua)
             """), {
                 "timestamp": log.get("timestamp"),
-                "ip": ip,   # 🔥 use same ip
+                "ip": ip,
                 "country": log.get("country"),
                 "method": log.get("method"),
                 "path": log.get("path"),
@@ -165,36 +144,18 @@ def full_traffic_analysis():
         return honeypot_manager.handle_trigger(request.path)
 
     # ---------------- RULE ENGINE ----------------
-    # alerts = rule_engine.analyze(log, rule_state)
-
-    # if alerts:
-
-    #     # Always log events first
-    #     for alert in alerts:
-    #         log_to_file(alert)
-
-    #     # Then block attacker if severity high
-    #     for alert in alerts:
-    #         if alert.get("severity") in ["high", "critical"]:
-
-    #             attacker_ip = get_real_ip(request)
-    #             ip_blocker.block(attacker_ip)
-
-    #             return "403 Forbidden - Threat Detected", 403
-
     alerts = rule_engine.analyze(log, rule_state)
 
     if alerts:
 
-        # log events first
         for alert in alerts:
             log_to_file(alert)
 
-        # enforce blocking
         for alert in alerts:
             if alert.get("severity") in ["high", "critical"]:
 
-                attacker_ip = get_real_ip(request)
+                # 🔥 block SAME ip used in log
+                attacker_ip = log.get("ip_address")
 
                 ip_blocker.block(attacker_ip)
 
@@ -203,6 +164,7 @@ def full_traffic_analysis():
                     "rule": alert.get("rule"),
                     "severity": alert.get("severity")
                 }), 403
+
 
 # =====================================================
 # CLOSE GEOIP DATABASE
