@@ -15,7 +15,9 @@ geoIP = GeoIPService()
 DASHBOARD_APIS = (
     "/api/traffic",
     "/api/events",
-    "/api/blocked-ips"
+    "/api/blocked-ips",
+    "/static",
+    "/favicon.ico"
 )
 
 

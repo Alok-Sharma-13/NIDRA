@@ -1,0 +1,24 @@
+[
+  {
+    "rule": "SQL Injection",
+    "description": "Signature match for pattern: (union select|drop table|--)",
+    "severity": "high",
+    "timestamp": "2026-03-22T03:44:52.701160",
+    "ip_address": "127.0.0.1",
+    "country": "Invalid IP",
+    "method": "POST",
+    "path": "/search?q=1 union select password from users --",
+    "user_agent": "python-requests/2.32.3"
+  },
+  {
+    "rule": "XSS Attempt",
+    "description": "Signature match for pattern: <script.*?>",
+    "severity": "high",
+    "timestamp": "2026-03-22T03:46:12.600638",
+    "ip_address": "127.0.0.1",
+    "country": "Unknown",
+    "method": "POST",
+    "path": "/search?q=<script>alert(1)</script>",
+    "user_agent": "python-requests/2.32.3"
+  }
+]
