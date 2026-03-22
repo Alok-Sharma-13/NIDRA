@@ -128,6 +128,22 @@ def get_traffic_db():
 #         "data": ips
 #     })
 
+@viewer_bp.route("/api/rules", methods=["GET"])
+def get_rules():
+    try:
+        with open(RULES_FILE, "r", encoding="utf-8") as f:
+            rules = json.load(f)
+
+        return jsonify({
+            "success": True,
+            "data": rules
+        })
+
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
 
 @viewer_bp.route("/api/rules/update", methods=["POST"])
 def update_rule():
