@@ -46,7 +46,10 @@ CORS(
     app,
     resources={
         r"/api/*": {
-            "origins": ["http://localhost:5173"],
+            "origins": [
+                "http://localhost:5173",
+                "https://nidrafrontend.vercel.app"
+                        ],
             "methods": ["GET", "POST", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"]
         }
@@ -82,7 +85,14 @@ def check_blocked_ip_first():
     ALLOWED_WHEN_BLOCKED = (
         "/api/traffic",
         "/api/events",
-        "/api/blocked-ips"
+        "/api/blocked-ips",
+        "/api/blocked-ips/db",
+        "/api/events/db/ip",
+        "/api/rules/update",
+        "/api/rules",
+        "/api/traffic/db",
+        "/api/events/db",
+        "/api/countries"
     )
 
     if ip_blocker.is_blocked(ip):

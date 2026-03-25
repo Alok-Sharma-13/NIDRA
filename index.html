@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>NIDRA - Network Intrusion Detection & Response</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: Arial, sans-serif;
+    background: #fff;
+    color: #111;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  nav {
+    border-bottom: 2px solid #111;
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+  }
+  .logo { font-weight: bold; font-size: 1.1rem; cursor: pointer; }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-links button {
+    background: none; border: none; font-size: 0.9rem;
+    padding: 5px 12px; cursor: pointer; font-family: Arial, sans-serif;
+    color: #555; border-radius: 3px;
+  }
+  .nav-links button:hover { background: #f0f0f0; color: #111; }
+  .nav-links button.active { color: #111; font-weight: bold; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+  .container { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+  section { padding: 44px 0; border-bottom: 1px solid #ddd; }
+  section:last-child { border-bottom: none; }
+
+  h1 { font-size: 1.9rem; margin-bottom: 12px; }
+  h2 { font-size: 1.35rem; margin-bottom: 10px; }
+  h3 { font-size: 1rem; margin-bottom: 6px; margin-top: 20px; color: #333; }
+  p  { color: #444; margin-bottom: 12px; max-width: 600px; }
+
+  .btn {
+    display: inline-block; padding: 9px 20px; border-radius: 4px;
+    font-size: 0.88rem; cursor: pointer; font-family: Arial, sans-serif;
+    margin-right: 8px; margin-bottom: 8px; text-decoration: none; border: none;
+  }
+  .btn-black { background: #111; color: #fff; }
+  .btn-black:hover { background: #333; }
+  .btn-border { background: #fff; color: #111; border: 1px solid #111; }
+  .btn-border:hover { background: #f5f5f5; }
+
+  .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 16px; }
+  .card { border: 1px solid #ddd; border-radius: 4px; padding: 16px; }
+  .card p { font-size: 0.85rem; color: #666; margin: 4px 0 0; }
+
+  pre {
+    background: #f5f5f5; border: 1px solid #ddd; border-radius: 4px;
+    padding: 14px 16px; font-size: 0.83rem; overflow-x: auto;
+    margin: 10px 0; line-height: 1.7; font-family: monospace; white-space: pre;
+  }
+  .callout {
+    border-left: 3px solid #111; background: #f8f8f8;
+    padding: 10px 14px; font-size: 0.85rem; color: #444; margin: 12px 0;
+  }
+
+  .page-header { padding: 40px 0 24px; border-bottom: 1px solid #ddd; margin-bottom: 32px; }
+  .page-header p { color: #777; font-size: 0.9rem; }
+
+  .tabs { display: flex; margin-bottom: -1px; }
+  .tab { background: #f5f5f5; border: 1px solid #ddd; border-bottom: none; padding: 6px 14px; font-size: 0.8rem; cursor: pointer; font-family: monospace; border-radius: 3px 3px 0 0; margin-right: 3px; color: #777; }
+  .tab.active { background: #fff; color: #111; font-weight: bold; }
+
+  .docs-layout { display: grid; grid-template-columns: 175px 1fr; gap: 36px; }
+  .docs-sidebar { border-right: 1px solid #ddd; padding-right: 16px; }
+  .docs-sidebar .group { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #999; padding: 10px 0 4px 8px; }
+  .docs-sidebar button {
+    display: block; width: 100%; text-align: left; background: none; border: none;
+    font-size: 0.85rem; padding: 6px 8px; cursor: pointer; border-radius: 3px;
+    font-family: Arial, sans-serif; color: #555; margin-bottom: 1px; border-left: 2px solid transparent;
+  }
+  .docs-sidebar button:hover { background: #f5f5f5; color: #111; }
+  .docs-sidebar button.active { color: #111; font-weight: bold; border-left-color: #111; background: #f5f5f5; }
+  .docs-body h2 { font-size: 1.3rem; margin-bottom: 12px; border-bottom: 1px solid #ddd; padding-bottom: 8px; }
+  .docs-body h3 { font-size: 0.95rem; font-weight: bold; margin: 20px 0 8px; color: #111; }
+  .docs-body p { color: #555; font-size: 0.9rem; margin-bottom: 10px; max-width: 100%; }
+  .docs-body ul { padding-left: 20px; color: #555; font-size: 0.88rem; line-height: 2; margin-bottom: 10px; }
+
+  /* ABOUT */
+  .about-hero { padding: 52px 0 44px; border-bottom: 1px solid #ddd; }
+  .about-hero h1 { font-size: 2rem; margin-bottom: 10px; }
+  .about-hero p { color: #555; max-width: 580px; font-size: 0.95rem; margin: 0; }
+
+  .about-section { padding: 44px 0; border-bottom: 1px solid #ddd; }
+  .about-section:last-child { border-bottom: none; padding-bottom: 56px; }
+
+  .section-label {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em;
+    color: #999; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: #eee; }
+
+  .project-desc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .project-desc-grid p { color: #555; font-size: 0.9rem; line-height: 1.8; max-width: 100%; margin: 0; }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 22px; }
+  .tag { border: 1px solid #ccc; border-radius: 3px; padding: 3px 11px; font-size: 0.75rem; color: #555; font-family: monospace; }
+
+  .team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 4px; }
+  .team-card { border: 1px solid #ddd; border-radius: 6px; overflow: hidden; }
+  .team-card-header { background: #111; color: #fff; padding: 22px 24px 18px; }
+  .team-card-header .tc-name { font-size: 1.1rem; font-weight: bold; margin-bottom: 6px; }
+  .team-card-header .tc-role { font-size: 0.78rem; color: #aaa; line-height: 1.5; }
+  .team-card-body { padding: 20px 24px; }
+  .team-card-body .resp-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: #999; margin-bottom: 10px; }
+  .team-card-body ul { list-style: none; padding: 0; }
+  .team-card-body ul li {
+    font-size: 0.85rem; color: #444; padding: 5px 0;
+    border-bottom: 1px solid #f0f0f0; display: flex;
+    align-items: flex-start; gap: 8px; line-height: 1.5;
+  }
+  .team-card-body ul li:last-child { border-bottom: none; }
+  .team-card-body ul li::before { content: '→'; color: #999; font-size: 0.75rem; flex-shrink: 0; margin-top: 2px; }
+
+  /* CONTACT */
+  .contact-box {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+    max-width: 480px;
+  }
+  .contact-box-header {
+    background: #111;
+    color: #fff;
+    padding: 28px 30px;
+  }
+  .contact-box-header h2 { color: #fff; font-size: 1.1rem; margin-bottom: 6px; }
+  .contact-box-header p { color: #aaa; font-size: 0.85rem; max-width: 100%; margin: 0; line-height: 1.7; }
+  .contact-box-body { padding: 24px 30px; }
+  .contact-detail { margin-bottom: 20px; }
+  .contact-detail:last-child { margin-bottom: 0; }
+  .contact-detail .cd-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: #999; margin-bottom: 4px; }
+  .contact-detail .cd-value { font-family: monospace; font-size: 0.9rem; color: #111; }
+  .contact-detail a { color: #111; text-decoration: none; }
+  .contact-detail a:hover { text-decoration: underline; }
+
+  /* footer */
+  footer { border-top: 2px solid #111; padding: 32px 0 20px; margin-top: 60px; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; max-width: 860px; margin: 0 auto 24px; padding: 0 24px; }
+  .footer-col-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #999; margin-bottom: 10px; }
+  .footer-link { display: block; background: none; border: none; text-align: left; font-size: 0.85rem; color: #555; padding: 3px 0; cursor: pointer; font-family: Arial, sans-serif; text-decoration: none; }
+  .footer-link:hover { color: #111; }
+  .footer-bottom { max-width: 860px; margin: 0 auto; padding: 16px 24px 0; border-top: 1px solid #ddd; display: flex; justify-content: space-between; font-size: 0.78rem; color: #aaa; flex-wrap: wrap; gap: 8px; }
+
+  @media (max-width: 700px) {
+    .grid-3 { grid-template-columns: 1fr; }
+    .team-grid { grid-template-columns: 1fr; }
+    .project-desc-grid { grid-template-columns: 1fr; }
+    .docs-layout { grid-template-columns: 1fr; }
+    .docs-sidebar { border-right: none; border-bottom: 1px solid #ddd; padding: 0 0 16px; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    nav { padding: 0 16px; }
+    .nav-links button { padding: 5px 7px; font-size: 0.82rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="go('home')">NIDRA</div>
+  <div class="nav-links">
+    <button class="active" onclick="go('home')">Home</button>
+    <button onclick="go('sdk')">SDK</button>
+    <button onclick="go('docs')">Docs</button>
+    <button onclick="go('about')">About</button>
+    <button onclick="go('contact')">Contact</button>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+<div class="container">
+  <section>
+    <h1>Network Intrusion Detection<br>& Response Assistant</h1>
+    <p>Real-time intrusion detection and response for modern web applications. NIDRA monitors your traffic and blocks threats before they reach your app.</p>
+    <p style="font-size:0.88rem;color:#777;margin-bottom:18px;max-width:500px;border-left:3px solid #ddd;padding-left:12px;">
+      NIDRA is an open source project. Anyone can use it, improve it, or add to it. If you have an idea or want to contribute, feel free to open a pull request on GitHub.
+    </p>
+    <button class="btn btn-black" onclick="go('sdk')">Download SDK</button>
+    <button class="btn btn-border" onclick="go('docs')">Read the Docs</button>
+  </section>
+  <section>
+    <h2>What it does</h2>
+    <p>NIDRA is middleware you add to your app. It inspects every HTTP request and blocks attacks in real time.</p>
+    <div class="grid-3">
+      <div class="card"><b>🔍 Detection</b><p>Catches SQL injection, XSS, path traversal, command injection and more.</p></div>
+      <div class="card"><b>⚡ Blocking</b><p>Blocks malicious requests automatically and logs every event.</p></div>
+      <div class="card"><b>🌍 GeoIP</b><p>Resolves attacker IPs to countries and cities.</p></div>
+      <div class="card"><b>📊 Dashboard</b><p>Local web UI to see live attack logs and rule performance.</p></div>
+      <div class="card"><b>🧩 Easy setup</b><p>Works with Express, FastAPI, Flask, Django and more. ~5 min to integrate.</p></div>
+      <div class="card"><b>⚙️ Rule-based engine</b><p>9 OWASP-based detection rules covering the most critical web attack categories.</p></div>
+    </div>
+  </section>
+  <section>
+    <h2>How it works</h2>
+    <p>NIDRA sits between incoming requests and your application logic.</p>
+    <pre style="text-align:center">HTTP Request  →  NIDRA Middleware  →  Rule Engine  →  Your App
+                       |
+             GeoIP · Logger · Alerts · Dashboard</pre>
+  </section>
+  <section style="border:none">
+    <h2>Get started</h2>
+    <p>Install the SDK and you'll be up and running in a few minutes.</p>
+    <button class="btn btn-black" onclick="go('sdk')">Download SDK</button>
+    <button class="btn btn-border" onclick="go('docs')">Installation guide</button>
+  </section>
+</div>
+</div>
+
+<!-- SDK -->
+<div id="page-sdk" class="page">
+<div class="container">
+  <div class="page-header">
+    <h1>Download SDK</h1>
+    <p>Supports Python and Node.js.</p>
+  </div>
+  <div style="border:1px solid #ddd;border-radius:4px;padding:24px;margin-bottom:32px;text-align:center">
+    <h2 style="margin-bottom:6px">NIDRA SDK v1.0.0</h2>
+    <p style="margin-bottom:16px">Middleware engine, OWASP detection rules, GeoIP database, and dashboard UI.</p>
+    <button class="btn btn-black" onclick="fakeDl(this)">⬇ Download nidra_sdk.py</button>
+    <a href="https://github.com/Alok-Sharma-13/NIDRA" target="_blank" class="btn btn-border">View on GitHub</a>
+    <div style="margin-top:12px;font-size:0.8rem;color:#999;font-family:monospace">v1.0.0</div>
+  </div>
+  <h2>Install via package manager</h2>
+  <div class="tabs">
+    <button class="tab active" onclick="swTab(this,'pip')">pip</button>
+    <button class="tab" onclick="swTab(this,'npm')">npm</button>
+  </div>
+  <pre id="tabCode" style="border-radius:0 4px 4px 4px;margin-top:0">pip install nidra-sdk</pre>
+  <h2 style="margin-top:32px">Supported technologies</h2>
+  <div class="grid-3" style="margin-top:12px">
+    <div class="card" style="text-align:center">🐍<br><b>FastAPI</b><br><small style="color:#999">Python</small></div>
+    <div class="card" style="text-align:center">🌶️<br><b>Flask</b><br><small style="color:#999">Python</small></div>
+    <div class="card" style="text-align:center">🦄<br><b>Django</b><br><small style="color:#999">Python</small></div>
+    <div class="card" style="text-align:center">🎨<br><b>Tailwind CSS</b><br><small style="color:#999">Styling</small></div>
+    <div class="card" style="text-align:center">⚛️<br><b>React</b><br><small style="color:#999">Frontend</small></div>
+    <div class="card" style="text-align:center">🐘<br><b>PostgreSQL</b><br><small style="color:#999">Database</small></div>
+  </div>
+  <section style="border:none;padding-bottom:0">
+    <h2>Quick start</h2>
+    <ol style="padding-left:20px;color:#555;line-height:2.2;font-size:0.9rem">
+      <li>Run <code style="background:#f5f5f5;padding:1px 6px;border-radius:3px;font-family:monospace">pip install nidra-sdk</code></li>
+      <li>Copy <code style="background:#f5f5f5;padding:1px 6px;border-radius:3px;font-family:monospace">nidra_sdk.py</code> into your project directory</li>
+      <li>Start the backend with <code style="background:#f5f5f5;padding:1px 6px;border-radius:3px;font-family:monospace">python backend/app.py</code></li>
+      <li>Apply the SDK decorator to your routes</li>
+    </ol>
+    <div class="callout" style="margin-top:16px">That's it. NIDRA will now monitor and analyze every request against OWASP detection rules.</div>
+  </section>
+</div>
+</div>
+
+<!-- DOCS -->
+<div id="page-docs" class="page">
+<div class="container">
+  <div class="page-header">
+    <h1>Documentation</h1>
+    <p>Installation, quick start, configuration, and usage guides.</p>
+  </div>
+  <div class="docs-layout">
+    <div class="docs-sidebar">
+      <div class="group">Guides</div>
+      <button class="active" onclick="showDoc(this,'install')">Installation</button>
+      <button onclick="showDoc(this,'quickstart')">Quick Start</button>
+      <button onclick="showDoc(this,'config')">Configuration</button>
+      <button onclick="showDoc(this,'detection')">Detection Capabilities</button>
+      <button onclick="showDoc(this,'bestpractices')">Best Practices</button>
+    </div>
+    <div class="docs-body" id="docsBody"></div>
+  </div>
+</div>
+</div>
+
+<!-- ABOUT -->
+<div id="page-about" class="page">
+<div class="container">
+
+  <div class="about-hero">
+    <h1>About NIDRA</h1>
+    <p>A cybersecurity monitoring and response system built to detect malicious web activity and respond to threats in real time.</p>
+  </div>
+
+  <div class="about-section">
+    <div class="section-label">The Project</div>
+    <div class="project-desc-grid">
+      <p>NIDRA demonstrates how rule-based intrusion detection systems can protect web applications from common attack vectors. It was built as an academic project exploring the practical design and implementation of a developer-friendly security layer.</p>
+      <p>The system intercepts incoming HTTP traffic, evaluates requests against a set of OWASP-based security rules, and responds in real time — blocking threats before they reach your application.</p>
+    </div>
+    <div class="tag-row">
+      <span class="tag">Python</span>
+      <span class="tag">Node.js</span>
+      <span class="tag">React</span>
+      <span class="tag">PostgreSQL</span>
+      <span class="tag">Rule-based Detection</span>
+      <span class="tag">OWASP Top 9</span>
+      <span class="tag">Real-time Analysis</span>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <div class="section-label">The Team</div>
+    <div class="team-grid">
+
+      <div class="team-card">
+        <div class="team-card-header">
+          <div class="tc-name">Alok Sharma</div>
+          <div class="tc-role">Backend · Security · System Design</div>
+        </div>
+        <div class="team-card-body">
+          <div class="resp-label">What he worked on</div>
+          <ul>
+            <li>Came up with the original idea for NIDRA</li>
+            <li>Built the backend and the threat detection engine</li>
+            <li>Wrote the security rules for all 9 OWASP attack types</li>
+            <li>Set up traffic logging and how attacks get analyzed</li>
+            <li>Designed how the system detects and blocks threats</li>
+            <li>Built the overall structure and security flow of the project</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="team-card">
+        <div class="team-card-header">
+          <div class="tc-name">Aditya Yadav</div>
+          <div class="tc-role">Frontend · Integration</div>
+        </div>
+        <div class="team-card-body">
+          <div class="resp-label">What he worked on</div>
+          <ul>
+            <li>Built the dashboard and the user interface</li>
+            <li>Connected the frontend to the backend</li>
+            <li>Made the rule management screen</li>
+            <li>Designed the live monitoring dashboard</li>
+            <li>Integrated the UI with the detection engine</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="about-section">
+    <div class="section-label">Source Code</div>
+    <p style="margin-bottom:16px;color:#555;font-size:0.9rem;max-width:100%">The full source code is available on GitHub.</p>
+    <a href="https://github.com/Alok-Sharma-13/NIDRA" target="_blank" class="btn btn-black">View on GitHub ↗</a>
+  </div>
+
+</div>
+</div>
+
+<!-- CONTACT -->
+<div id="page-contact" class="page">
+<div class="container">
+  <div class="page-header">
+    <h1>Contact</h1>
+    <p>For collaboration, questions, or project inquiries feel free to contact us.</p>
+  </div>
+
+  <div class="contact-box">
+    <div class="contact-box-header">
+      <h2>Get in touch</h2>
+      <p>We are happy to answer questions about NIDRA, discuss collaboration, or talk about the project.</p>
+    </div>
+    <div class="contact-box-body">
+      <div class="contact-detail">
+        <div class="cd-label">Email</div>
+        <div class="cd-value">aloksharma132005&#64;gmail&#46;com</div>
+      </div>
+      <div class="contact-detail">
+        <div class="cd-label">GitHub</div>
+        <div class="cd-value"><a href="https://github.com/Alok-Sharma-13/NIDRA" target="_blank">github.com/Alok-Sharma-13/NIDRA</a></div>
+      </div>
+      <div class="contact-detail">
+        <div class="cd-label">Location</div>
+        <div class="cd-value">Mumbai, Maharashtra, India</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <b style="font-size:1rem">NIDRA</b>
+      <p style="font-size:0.82rem;color:#777;margin-top:8px;max-width:200px">Open-source network intrusion detection middleware.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Product</div>
+      <button class="footer-link" onclick="go('home')">Home</button>
+      <button class="footer-link" onclick="go('sdk')">SDK</button>
+    </div>
+    <div>
+      <div class="footer-col-title">Docs</div>
+      <button class="footer-link" onclick="go('docs')">Installation</button>
+      <button class="footer-link" onclick="go('docs')">Quick Start</button>
+    </div>
+    <div>
+      <div class="footer-col-title">Project</div>
+      <button class="footer-link" onclick="go('about')">About</button>
+      <button class="footer-link" onclick="go('contact')">Contact</button>
+      <a class="footer-link" href="https://github.com/Alok-Sharma-13/NIDRA" target="_blank">GitHub ↗</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 NIDRA</span>
+    <span>Made in Mumbai, India 🇮🇳</span>
+  </div>
+</footer>
+
+<script>
+const pages = ['home','sdk','docs','about','contact'];
+
+function go(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-links button').forEach((b, i) => {
+    b.classList.toggle('active', pages[i] === id);
+  });
+  window.scrollTo(0, 0);
+  if (id === 'docs') showDoc(null, 'install');
+}
+
+const tabC = { pip: 'pip install nidra-sdk', npm: 'npm install nidra-sdk' };
+function swTab(btn, lang) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tabCode').textContent = tabC[lang];
+}
+
+function fakeDl(btn) {
+  const b64 = "aW1wb3J0IHJlcXVlc3RzDQpmcm9tIGZ1bmN0b29scyBpbXBvcnQgd3JhcHMNCmZyb20gZmxhc2sgaW1wb3J0IHJlcXVlc3QNCmZyb20gZGF0ZXRpbWUgaW1wb3J0IGRhdGV0aW1lDQpmcm9tIHVybGxpYi5wYXJzZSBpbXBvcnQgdW5xdW90ZQ0KDQpOSURSQV9CQUNLRU5EID0gImh0dHA6Ly9sb2NhbGhvc3Q6ODAwMCINCg0KY2xhc3MgTmlkcmFTREs6DQoNCiAgICBkZWYgY2FwdHVyZV9yZXF1ZXN0KHNlbGYsIHJlcXVlc3Rfb2JqKToNCg0KICAgICAgICBkZWNvZGVkX3BhdGggPSB1bnF1b3RlKHJlcXVlc3Rfb2JqLmZ1bGxfcGF0aCkNCg0KICAgICAgICBmb3J3YXJkZWQgPSByZXF1ZXN0X29iai5oZWFkZXJzLmdldCgiWC1Gb3J3YXJkZWQtRm9yIikNCiAgICAgICAgaXAgPSBmb3J3YXJkZWQuc3BsaXQoIiwiKVswXS5zdHJpcCgpIGlmIGZvcndhcmRlZCBlbHNlIHJlcXVlc3Rfb2JqLnJlbW90ZV9hZGRyDQoNCiAgICAgICAgbG9nX2RhdGEgPSB7DQogICAgICAgICAgICAidGltZXN0YW1wIjogZGF0ZXRpbWUudXRjbm93KCkuaXNvZm9ybWF0KCksDQogICAgICAgICAgICAjICJpcF9hZGRyZXNzIjogcmVxdWVzdF9vYmoucmVtb3RlX2FkZHIsDQogICAgICAgICAgICAiaXBfYWRkcmVzcyI6IGlwLA0KICAgICAgICAgICAgIm1ldGhvZCI6IHJlcXVlc3Rfb2JqLm1ldGhvZCwNCiAgICAgICAgICAgICJwYXRoIjogZGVjb2RlZF9wYXRoLA0KICAgICAgICAgICAgInVzZXJfYWdlbnQiOiByZXF1ZXN0X29iai5oZWFkZXJzLmdldCgiVXNlci1BZ2VudCIpLA0KICAgICAgICAgICAgImJvZHkiOiByZXF1ZXN0X29iai5mb3JtLnRvX2RpY3QoKSBpZiByZXF1ZXN0X29iai5mb3JtIGVsc2Uge30sDQogICAgICAgICAgICAiZmlsZXMiOiBbZi5maWxlbmFtZSBmb3IgZiBpbiByZXF1ZXN0X29iai5maWxlcy52YWx1ZXMoKV0gaWYgcmVxdWVzdF9vYmouZmlsZXMgZWxzZSBbXQ0KICAgICAgICB9ICAgDQoNCiAgICAgICAgdHJ5Og0KICAgICAgICAgICAgcmVzcG9uc2UgPSByZXF1ZXN0cy5wb3N0KA0KICAgICAgICAgICAgICAgIGYie05JRFJBX0JBQ0tFTkR9L2FwaS9ydWxlcy9hbmFseXplIiwNCiAgICAgICAgICAgICAgICBqc29uPVtsb2dfZGF0YV0sDQogICAgICAgICAgICAgICAgdGltZW91dD01DQogICAgICAgICAgICApDQoNCiAgICAgICAgICAgICMg8J+UpSBJZiBiYWNrZW5kIGFscmVhZHkgYmxvY2tlZCB0aGlzIElQDQogICAgICAgICAgICBpZiByZXNwb25zZS5zdGF0dXNfY29kZSA9PSA0MDM6DQogICAgICAgICAgICAgICAgcmV0dXJuICI0MDMgRm9yYmlkZGVuIC0gQmxvY2tlZCBieSBOSURSQSIsIDQwMw0KDQogICAgICAgICAgICByZXN1bHQgPSByZXNwb25zZS5qc29uKCkNCg0KICAgICAgICAgICAgaWYgcmVzdWx0LmdldCgiYmxvY2tlZCIpOg0KICAgICAgICAgICAgICAgIHJldHVybiAiNDAzIEZvcmJpZGRlbiAtIEJsb2NrZWQgYnkgTklEUkEiLCA0MDMNCg0KICAgICAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6DQogICAgICAgICAgICBwcmludChmIltTREsgRVJST1JdIHtlfSIpDQoNCiAgICAgICAgcmV0dXJuIE5vbmUNCg0KDQpkZWYgc25pZmZfcmVxdWVzdF9kZWNvcmF0b3Ioc2RrX2luc3RhbmNlKToNCiAgICBkZWYgZGVjb3JhdG9yKGZ1bmMpOg0KICAgICAgICBAd3JhcHMoZnVuYykNCiAgICAgICAgZGVmIHdyYXBwZXIoKmFyZ3MsICoqa3dhcmdzKToNCg0KICAgICAgICAgICAgcmVzdWx0ID0gc2RrX2luc3RhbmNlLmNhcHR1cmVfcmVxdWVzdChyZXF1ZXN0KQ0KDQogICAgICAgICAgICBpZiByZXN1bHQgaXMgbm90IE5vbmU6DQogICAgICAgICAgICAgICAgcmV0dXJuIHJlc3VsdA0KDQogICAgICAgICAgICByZXR1cm4gZnVuYygqYXJncywgKiprd2FyZ3MpDQoNCiAgICAgICAgcmV0dXJuIHdyYXBwZXINCiAgICByZXR1cm4gZGVjb3JhdG9y";
+  const bytes = atob(b64);
+  const blob = new Blob([bytes], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'nidra_sdk.py';
+  a.click();
+  btn.textContent = '✓ Downloaded!';
+  setTimeout(() => { btn.textContent = '⬇ Download .zip'; }, 2500);
+}
+
+const dc = {
+install:`<h2>Installation</h2>
+<h3>1. Download the NIDRA SDK package</h3>
+<p>Copy the SDK file into your application directory.</p>
+<p>Example structure:</p>
+<pre>project/
+│
+├── application_code
+├── nidra_sdk.py</pre>
+<h3>2. Install required dependencies</h3>
+<pre>pip install requests</pre>
+<h3>3. Start the NIDRA backend detection engine</h3>
+<pre>python backend/app.py</pre>
+<p>The backend engine receives traffic logs from your application and performs real-time threat analysis.</p>`,
+
+quickstart:`<h2>Quick Start</h2>
+<p>The NIDRA SDK works by intercepting incoming requests and forwarding request metadata to the NIDRA detection engine.</p>
+<h3>Import the SDK</h3>
+<pre>from nidra_sdk import NidraSDK, sniff_request_decorator</pre>
+<h3>Initialize the SDK</h3>
+<pre>sdk = NidraSDK()</pre>
+<h3>Apply the request sniffer to protected routes</h3>
+<pre>@sniff_request_decorator(sdk)
+def handle_request():
+    # application logic here
+    return response</pre>
+<p>Once applied, NIDRA will automatically:</p>
+<ul>
+  <li>Capture request metadata</li>
+  <li>Send traffic data to the detection engine</li>
+  <li>Analyze the request against security rules</li>
+  <li>Block or flag malicious activity</li>
+</ul>`,
+
+config:`<h2>Configuration</h2>
+<p>NIDRA detection rules are configured using a rules configuration file.</p>
+<h3>Location</h3>
+<pre>data/rules.json</pre>
+<h3>Example configuration</h3>
+<pre>{
+  "enabled_rules": {
+    "SQL Injection": true,
+    "XSS Attempt": true,
+    "IP Flood": true,
+    "Suspicious User-Agent": true,
+    "Broken Authentication": true,
+    "Broken Access Control / IDOR": true,
+    "Remote Code Execution / Command Injection": true,
+    "File Upload Abuse": true,
+    "Insecure Deserialization": true
+  }
+}</pre>
+<p>Each rule can be enabled or disabled by setting its value to <code style="background:#f5f5f5;padding:1px 5px;border-radius:3px;font-family:monospace">true</code> or <code style="background:#f5f5f5;padding:1px 5px;border-radius:3px;font-family:monospace">false</code>.</p>
+<p>Rules can also be updated dynamically through the management API or the dashboard.</p>`,
+
+detection:`<h2>Detection Capabilities</h2>
+<p>NIDRA monitors application traffic and detects multiple types of malicious activity, including:</p>
+<ul>
+  <li>Injection attacks (SQL, command)</li>
+  <li>Script injection attempts (XSS)</li>
+  <li>Suspicious request patterns and user-agents</li>
+  <li>Authentication abuse attempts</li>
+  <li>Unauthorized resource access attempts (IDOR)</li>
+  <li>Remote code execution patterns</li>
+  <li>Malicious file upload attempts</li>
+  <li>Deserialization exploitation patterns</li>
+  <li>Traffic flooding and abnormal request rates</li>
+</ul>
+<p>The rule engine evaluates every incoming request against these detection patterns in real time.</p>`,
+
+bestpractices:`<h2>Best Practices</h2>
+<p>To get the most out of NIDRA:</p>
+<ul>
+  <li>Integrate the SDK into all sensitive application endpoints</li>
+  <li>Keep the backend detection engine running continuously</li>
+  <li>Monitor the security dashboard regularly for alerts</li>
+  <li>Review and adjust detection rules based on your application's traffic</li>
+</ul>
+<p>NIDRA is designed to complement secure development practices and provide additional visibility into potential threats targeting your application.</p>`,
+};
+
+function showDoc(btn, id) {
+  if (btn) {
+    document.querySelectorAll('.docs-sidebar button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  document.getElementById('docsBody').innerHTML = dc[id] || '';
+}
+
+window.addEventListener('DOMContentLoaded', function() { go('home'); });
+</script>
+</body>
+</html>

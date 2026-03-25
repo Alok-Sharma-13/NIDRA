@@ -16,6 +16,13 @@ DASHBOARD_APIS = (
     "/api/traffic",
     "/api/events",
     "/api/blocked-ips",
+    "/api/blocked-ips/db",
+    "/api/events/db/ip",
+    "/api/rules/update",
+    "/api/rules",
+    "/api/traffic/db",
+    "/api/events/db",
+    "/api/countries"
     "/static",
     "/favicon.ico"
 )
