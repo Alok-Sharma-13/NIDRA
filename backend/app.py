@@ -46,7 +46,7 @@ CORS(
     app,
     resources={
         r"/api/*": {
-            "origins": ["http://localhost:5173"],
+            "origins": ["http://localhost:5173","https://nidrafrontend.vercel.app"],
             "methods": ["GET", "POST", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"]
         }
