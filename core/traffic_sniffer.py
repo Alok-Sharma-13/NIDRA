@@ -6,10 +6,19 @@ Author: Alok
 Date: June 2025
 """
 
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from core.geoip_lookup import GeoIPService
+from datetime import datetime, timezone, timedelta
+# import pytz
+
+IST = timezone(timedelta(hours=5,minutes=30))
+
+
+def now_ist():
+    return datetime.now(IST).isoformat()
 
 geoIP = GeoIPService()
+
 
 # Dashboard APIs (must NEVER be blocked)
 DASHBOARD_APIS = (
@@ -68,7 +77,7 @@ def sniff_request(request):
         country = geoIP.lookup_country(ip_address)
 
         log_data = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": now_ist(),
             "ip_address": ip_address,
             "country": country,
             "method": request.method,

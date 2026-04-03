@@ -11,6 +11,14 @@ import json
 from datetime import datetime
 from backend.database_config import engine
 from sqlalchemy import text
+from datetime import datetime, timezone, timedelta
+# import pytz
+
+IST = timezone(timedelta(hours=5,minutes=30))
+
+
+def now_ist():
+    return datetime.now(IST).isoformat()
 
 ALERT_FILE = "data/log/events.json"
 def log_to_file(alert: dict):
