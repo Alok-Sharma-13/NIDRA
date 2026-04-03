@@ -35,6 +35,8 @@ class SignatureRule(Rule):
     """
     def __init__(self, name: str, pattern: str, target: str = "path", severity: str = "medium"):
         super().__init__(name, f"Signature match for pattern: {pattern}", severity)
+        if isinstance(pattern,list):
+            pattern = "|".join(pattern)
         self.pattern = re.compile(pattern, re.IGNORECASE)
         self.target = target
 
@@ -119,13 +121,131 @@ class RuleEngine:
 
         # Signature Rules
         if enabled_rules.get("SQL Injection", False):
+            # self.signature_rules.append(
+            #     SignatureRule("SQL Injection", r"(union select|drop table|--)", target="path", severity="high")
+            # )
             self.signature_rules.append(
-                SignatureRule("SQL Injection", r"(union select|drop table|--)", target="path", severity="high")
+                SignatureRule(
+                    "SQL Injection",
+                    [
+                        r"union select",
+                        r"or 1=1",
+                        r"or '1'='1",
+                        r"or \"1\"=\"1\"",
+                        r"sleep\(",
+                        r"benchmark\(",
+                        r"pg_sleep",
+                        r"waitfor delay",
+                        r"drop table",
+                        r"insert into",
+                        r"delete from",
+                        r"update .* set",
+                        r"information_schema",
+                        r"xp_cmdshell",
+                        r"exec\(",
+                        r"--",
+                        r"#",
+                        r"/\*.*\*/",
+                        r"having 1=1",
+                        r"and 1=1",
+                        r"load_file",
+                        r"outfile",
+                        r"0x[0-9a-f]+",
+                        r"char\(",
+                        r"cast\(",
+                        r"convert\(",
+                        r"substring\(",
+                        r"ascii\(",
+                        r"version\(",
+                        r"database\(",
+                        r"user\(",
+                        r"select .* from",
+                        r"union all select",
+                        r"order by \d+",
+                        r"group by",
+                        r"limit \d+",
+                        r"offset \d+",
+                        r"truncate table",
+                        r"alter table",
+                        r"create table",
+                        r"show tables",
+                        r"show databases",
+                        r"into dumpfile",
+                        r"into outfile",
+                        r"load data",
+                        r"@@version",
+                        r"@@datadir",
+                        r"@@hostname",
+                        r"sysobjects",
+                        r"syscolumns"
+                    ],
+                    target="path",
+                    severity="high"
+                )
             )
 
         if enabled_rules.get("XSS Attempt", False):
+            # self.signature_rules.append(
+            #     SignatureRule("XSS Attempt", r"<script.*?>", target="path", severity="high")
+            # )
             self.signature_rules.append(
-                SignatureRule("XSS Attempt", r"<script.*?>", target="path", severity="high")
+                SignatureRule(
+                    "XSS Attempt",
+                    [
+                        r"<script",
+                        r"</script>",
+                        r"alert\(",
+                        r"prompt\(",
+                        r"confirm\(",
+                        r"onerror=",
+                        r"onload=",
+                        r"onmouseover=",
+                        r"onclick=",
+                        r"onfocus=",
+                        r"onblur=",
+                        r"<img",
+                        r"<svg",
+                        r"<iframe",
+                        r"<object",
+                        r"<embed",
+                        r"<video",
+                        r"<audio",
+                        r"<details",
+                        r"<marquee",
+                        r"javascript:",
+                        r"vbscript:",
+                        r"data:text/html",
+                        r"document\.cookie",
+                        r"document\.write",
+                        r"window\.location",
+                        r"eval\(",
+                        r"setTimeout",
+                        r"setInterval",
+                        r"innerHTML",
+                        r"outerHTML",
+                        r"srcdoc=",
+                        r"base64,",
+                        r"expression\(",
+                        r"<body",
+                        r"<link",
+                        r"<meta",
+                        r"<style",
+                        r"&#x",
+                        r"%3Cscript",
+                        r"%3Cimg",
+                        r"%3Csvg",
+                        r"onkeydown=",
+                        r"onkeyup=",
+                        r"onmousedown=",
+                        r"onmouseup=",
+                        r"onmouseenter=",
+                        r"onmouseleave=",
+                        r"onwheel=",
+                        r"oninput="
+                    ],
+                    target="path",
+                    severity="high"
+                )
             )
 
         if enabled_rules.get("Suspicious User-Agent", False):
@@ -150,8 +270,67 @@ class RuleEngine:
             )
 
         if enabled_rules.get("Remote Code Execution / Command Injection", False):
+            # self.signature_rules.append(
+            #     SignatureRule("Remote Code Execution / Command Injection", r"(\b(cat|ls|whoami|curl|wget|bash|sh)\b|;|&&|\|)", target="body", severity="critical")
+            # )
             self.signature_rules.append(
-                SignatureRule("Remote Code Execution / Command Injection", r"(\b(cat|ls|whoami|curl|wget|bash|sh)\b|;|&&|\|)", target="body", severity="critical")
+                SignatureRule(
+                    "Remote Code Execution / Command Injection",
+                    [
+                        r";",
+                        r"&&",
+                        r"\|\|",
+                        r"\|",
+                        r"\bcat\b",
+                        r"\bls\b",
+                        r"\bwhoami\b",
+                        r"\bpwd\b",
+                        r"\bid\b",
+                        r"\buname\b",
+                        r"\bhostname\b",
+                        r"\bwget\b",
+                        r"\bcurl\b",
+                        r"\bbash\b",
+                        r"\bsh\b",
+                        r"\bpython\b",
+                        r"\bperl\b",
+                        r"\bphp\b",
+                        r"\bnode\b",
+                        r"\bruby\b",
+                        r"nc ",
+                        r"netcat",
+                        r"telnet",
+                        r"chmod",
+                        r"chown",
+                        r"rm -rf",
+                        r"mkfs",
+                        r"dd if=",
+                        r"scp ",
+                        r"ssh ",
+                        r"ftp ",
+                        r"tftp ",
+                        r"powershell",
+                        r"cmd\.exe",
+                        r"system\(",
+                        r"exec\(",
+                        r"shell_exec",
+                        r"popen",
+                        r"proc_open",
+                        r"subprocess",
+                        r"os\.system",
+                        r"Runtime\.getRuntime",
+                        r"ProcessBuilder",
+                        r"/bin/sh",
+                        r"/bin/bash",
+                        r"/etc/passwd",
+                        r"/etc/shadow",
+                        r"\\.\\pipe\\",
+                        r"\\windows\\system32",
+                        r"\\boot\\.ini"
+                    ],
+                    target="body",
+                    severity="critical"
+                )
             )
 
         if enabled_rules.get("File Upload Abuse", False):
@@ -160,8 +339,71 @@ class RuleEngine:
             )
 
         if enabled_rules.get("Insecure Deserialization", False):
+            # self.signature_rules.append(
+            #     SignatureRule("Insecure Deserialization", r"(pickle|object|javaSerialized|Y29tcGxleA==|__reduce__)", target="body", severity="critical")
+            # )
             self.signature_rules.append(
-                SignatureRule("Insecure Deserialization", r"(pickle|object|javaSerialized|Y29tcGxleA==|__reduce__)", target="body", severity="critical")
+                SignatureRule(
+                    "Insecure Deserialization",
+                    [
+                        r"pickle",
+                        r"cPickle",
+                        r"__reduce__",
+                        r"__reduce_ex__",
+                        r"__setstate__",
+                        r"__getstate__",
+                        r"marshal",
+                        r"yaml.load",
+                        r"!!python/object",
+                        r"!!python/object/apply",
+                        r"!!python/module",
+                        r"!!python/name",
+                        r"!!python/object/new",
+                        r"javaSerialized",
+                        r"ACED0005",
+                        r"rO0AB",
+                        r"ObjectInputStream",
+                        r"readObject",
+                        r"writeObject",
+                        r"Serializable",
+                        r"java.io",
+                        r"commons-collections",
+                        r"InvokerTransformer",
+                        r"TemplatesImpl",
+                        r"Runtime.getRuntime",
+                        r"ProcessBuilder",
+                        r"ysoserial",
+                        r"base64",
+                        r"Y29tcGxleA==",
+                        r"Y3JlYXRl",
+                        r"application/x-java-serialized-object",
+                        r"application/x-python-serialize",
+                        r"application/x-pickle",
+                        r"__class__",
+                        r"__globals__",
+                        r"__builtins__",
+                        r"eval\(",
+                        r"exec\(",
+                        r"subprocess",
+                        r"os.system",
+                        r"system\(",
+                        r"shell_exec",
+                        r"php://input",
+                        r"phar://",
+                        r"unserialize\(",
+                        r"serialize\(",
+                        r"O:\d+:",
+                        r"a:\d+:{",
+                        r"s:\d+:",
+                        r"b:\d+;",
+                        r"i:\d+;",
+                        r"d:\d+;",
+                        r"C:\d+:",
+                        r"N;"
+                    ],
+                    target="body",
+                    severity="critical"
+                )
             )
 
 
