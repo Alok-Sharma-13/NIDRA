@@ -21,11 +21,23 @@ geoIP = GeoIPService()
 
 
 # Dashboard APIs (must NEVER be blocked)
+# DASHBOARD_APIS = (
+#     "/api/traffic",
+#     "/api/events",
+#     "/api/blocked-ips",
+#     "/static",
+#     "/favicon.ico"
+# )
 DASHBOARD_APIS = (
     "/api/traffic",
     "/api/events",
     "/api/blocked-ips",
-    "/static",
+    "/api/blocked-ips/db",
+    "/api/events/db",
+    "/api/events/db/ip",
+    "/api/traffic/db",
+    "/api/rules/update",
+    "/api/countries",
     "/favicon.ico"
 )
 
@@ -39,7 +51,9 @@ def sniff_request(request):
         path = request.path if hasattr(request, "path") else str(request.url.path)
 
         # 🔴 Always allow dashboard APIs
-        if path.startswith(DASHBOARD_APIS):
+        # if path.startswith(DASHBOARD_APIS):
+        #     return None
+        if any(path.startswith(prefix) for prefix in DASHBOARD_APIS):
             return None
 
         # 🔴 Ignore Render health checks
