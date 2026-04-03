@@ -45,6 +45,10 @@ class CountryBlocker:
         
         self.rules[iso]["allowed"] = False
         self._save_rules()
+
+        # reload memory immediately
+        self.rules = self._load_rules()
+
         print(f"[CountryBlocker] Blocked country: {iso}")
         return True
 
@@ -55,6 +59,10 @@ class CountryBlocker:
         
         self.rules[iso]["allowed"] = True
         self._save_rules()
+
+        # reload memory immediately
+        self.rules = self._load_rules()
+
         print(f"[CountryBlocker] Unblocked country: {iso}")
         return True
 
@@ -72,7 +80,7 @@ class CountryBlocker:
         """Return ISO country code from IPv4/IPv6"""
         try:
             result = self.geo.country(ip)
-            return result.country.iso_code  # US, IN, CN etc.
+            return result.country.iso_code
         except:
             return None
 
@@ -81,7 +89,7 @@ class CountryBlocker:
         iso = self.get_country_from_ip(ip)
 
         if iso is None:
-            return True  # If lookup fails, allow by default
+            return True
 
         return self.is_country_allowed(iso)
 
