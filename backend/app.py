@@ -82,14 +82,7 @@ def check_blocked_ip_first():
     ALLOWED_WHEN_BLOCKED = (
         "/api/traffic",
         "/api/events",
-        "/api/blocked-ips",
-        "/api/blocked-ips/db",
-        "/api/events/db/ip",
-        "/api/rules/update",
-        "/api/rules",
-        "/api/traffic/db",
-        "/api/events/db",
-        "/api/countries"
+        "/api/blocked-ips"
     )
 
     if ip_blocker.is_blocked(ip):
